@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>MyHealth Reminder</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#14161F;--bg-card:#1C1F2E;--bg-card2:#222638;--bg-input:#1C1F2E;
+  --border:rgba(255,255,255,0.08);
+  --accent:#4ADE80;--accent-d:#22C55E;--accent-g:rgba(74,222,128,0.13);
+  --tag-hyd-bg:#92400E;--tag-hyd-fg:#FDE68A;
+  --tag-med-bg:#1E3A8A;--tag-med-fg:#BFDBFE;
+  --tag-exe-bg:#14532D;--tag-exe-fg:#BBF7D0;
+  --text:#FFFFFF;--muted:rgba(255,255,255,0.48);--soft:rgba(255,255,255,0.78);
+  --font:'DM Sans',system-ui,sans-serif;
+  --r-sm:4px;--r-md:12px;--r-lg:16px;--r-xl:22px;--r-pill:50px;
+  --ease:.22s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{width:100%;height:100%;font-family:var(--font);background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%;overflow:hidden}
+/* ── Screen system ── */
+.screen-page{display:none;flex-direction:column;width:100%;height:100vh;height:100dvh;background:var(--bg);overflow:hidden}
+.screen-page.active{display:flex}
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.scroll-area::-webkit-scrollbar{display:none}
+.pad{padding:0 16px 28px}
+/* ── Auth screen ── */
+.auth-page{flex:1;display:flex;flex-direction:column;align-items:center;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:48px 22px 32px}
+.auth-logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:28px}
+.auth-logo-ico{width:62px;height:62px;border-radius:18px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.auth-app-nm{font-size:17px;font-weight:700;color:var(--text)}
+.auth-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:5px;text-align:center}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:24px;text-align:center}
+.auth-form{width:100%;max-width:400px}
+.divider{display:flex;align-items:center;gap:12px;margin:16px 0;font-size:12px;color:var(--muted)}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-foot{margin-top:18px;text-align:center;font-size:13px;color:var(--muted)}
+.auth-foot a{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:none}
+/* ── App bar ── */
+.app-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-shrink:0;gap:10px}
+.app-bar-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.app-bar-logo{width:36px;height:36px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0}
+.app-bar-name{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-bar-title{font-size:17px;font-weight:700;color:var(--text)}
+.back-bar{display:flex;align-items:center;gap:10px;padding:12px 16px 10px;flex-shrink:0}
+.back-btn{width:34px;height:34px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--soft);cursor:pointer;flex-shrink:0;transition:color var(--ease),border-color var(--ease)}
+.back-btn:hover{color:var(--accent);border-color:rgba(74,222,128,.3)}
+.back-title{font-size:16px;font-weight:700;color:var(--text)}
+.icon-btn{width:36px;height:36px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;flex-shrink:0;transition:color var(--ease),border-color var(--ease)}
+.icon-btn:hover{color:var(--accent);border-color:rgba(74,222,128,.3)}
+/* ── Bottom nav ── */
+.bottom-nav{display:flex;background:var(--bg-card);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 8px;gap:3px;color:var(--muted);border:none;background:none;font-family:var(--font);cursor:pointer;transition:color var(--ease)}
+.nav-btn.active,.nav-btn:hover{color:var(--accent)}
+.nav-lbl{font-size:10px;font-weight:600}
+/* ── Cards ── */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px}
+.sec-hdr{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px}
+/* ── Tags ── */
+.tag{font-size:10px;font-weight:700;padding:2px 9px;border-radius:var(--r-pill);white-space:nowrap}
+.tag.hydration{background:var(--tag-hyd-bg);color:var(--tag-hyd-fg)}
+.tag.medication{background:var(--tag-med-bg);color:var(--tag-med-fg)}
+.tag.exercise{background:var(--tag-exe-bg);color:var(--tag-exe-fg)}
+/* ── Reminder row ── */
+.rem-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.rem-row:last-child{border-bottom:none}
+.rem-ico{width:32px;height:32px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rem-ico.hydration{background:rgba(146,64,14,.28);color:#FCD34D}
+.rem-ico.medication{background:rgba(30,58,138,.28);color:#93C5FD}
+.rem-ico.exercise{background:rgba(20,83,45,.28);color:var(--accent)}
+.rem-name{font-size:13px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rem-time{font-size:11px;color:var(--muted);white-space:nowrap}
+.icon-del{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:6px;transition:color var(--ease);flex-shrink:0}
+.icon-del:hover{color:#F87171}
+/* ── Checklist ── */
+.chk-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.chk-item:last-child{border-bottom:none}
+.chk-box{width:20px;height:20px;border-radius:5px;flex-shrink:0;border:2px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;transition:background var(--ease),border-color var(--ease)}
+.chk-box.done{background:var(--accent);border-color:var(--accent)}
+.chk-lbl{font-size:13px;color:var(--soft);transition:color var(--ease);flex:1}
+.chk-lbl.done{text-decoration:line-through;color:var(--muted)}
+/* ── Buttons ── */
+.btn-primary{width:100%;height:50px;border:none;border-radius:var(--r-pill);background:var(--accent);color:#0F1118;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background var(--ease),transform var(--ease),box-shadow var(--ease);box-shadow:0 4px 20px rgba(74,222,128,.2);position:relative;overflow:hidden}
+.btn-primary:hover{background:#6EF09A;box-shadow:0 6px 28px rgba(74,222,128,.36)}
+.btn-primary:active{transform:scale(.97)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-outline{width:100%;height:48px;border-radius:var(--r-pill);border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-family:var(--font);font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background var(--ease),transform var(--ease);position:relative;overflow:hidden}
+.btn-outline:hover{background:var(--accent-g)}
+.btn-outline:active{transform:scale(.97)}
+.btn-ghost{width:100%;height:44px;border:none;background:none;color:#F87171;font-family:var(--font);font-size:13.5px;font-weight:600;cursor:pointer;transition:color var(--ease)}
+.btn-ghost:hover{color:#FCA5A5}
+.btn-danger{width:100%;height:46px;border:1px solid rgba(248,113,113,.25);border-radius:var(--r-md);background:rgba(248,113,113,.08);color:#F87171;font-family:var(--font);font-size:13.5px;font-weight:600;cursor:pointer;transition:all var(--ease)}
+.btn-danger:hover{background:rgba(248,113,113,.16);border-color:rgba(248,113,113,.45)}
+/* ── Forms ── */
+.form-group{margin-bottom:16px}
+.form-lbl{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.form-input,.form-select{width:100%;height:48px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r-md);padding:0 14px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color var(--ease);-webkit-appearance:none}
+.form-input:focus,.form-select:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--muted)}
+textarea.form-input{height:auto;padding-top:12px;resize:none;line-height:1.55}
+.form-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='rgba(255,255,255,0.38)' stroke-width='1.8' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.form-select option{background:#1C1F2E;color:#fff}
+.input-icon-wrap{position:relative}
+.input-icon-wrap .input-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.input-icon-wrap .form-input{padding-left:40px}
+.err-msg{font-size:12px;color:#F87171;margin-top:5px;display:none}
+.err-msg.show{display:block}
+.pw-wrap{position:relative}
+.pw-tog{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;transition:color var(--ease)}
+.pw-tog:hover{color:var(--accent)}
+.str-bar{height:4px;border-radius:2px;background:var(--bg-card2);margin-top:7px;overflow:hidden}
+.str-fill{height:100%;border-radius:2px;width:0;transition:width .3s,background .3s}
+.str-txt{font-size:11px;margin-top:4px}
+/* ── Toggle group ── */
+.toggle-grp{display:flex;gap:8px;flex-wrap:wrap}
+.tog-btn{padding:8px 16px;border-radius:var(--r-pill);border:1px solid var(--border);background:var(--bg-card2);color:var(--muted);font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:all var(--ease)}
+.tog-btn.on{background:var(--accent);border-color:var(--accent);color:#0F1118}
+.tog-btn:hover:not(.on){border-color:rgba(74,222,128,.4);color:var(--accent)}
+/* ── Preset grid ── */
+.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.preset-card{background:var(--bg-card2);border:1.5px solid var(--border);border-radius:var(--r-md);padding:12px 10px;cursor:pointer;transition:all var(--ease)}
+.preset-card.on{border-color:var(--accent);background:var(--accent-g)}
+.preset-card:hover:not(.on){border-color:rgba(74,222,128,.3)}
+.preset-card-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+.preset-card-desc{font-size:10.5px;color:var(--muted);line-height:1.5}
+/* ── Tone picker ── */
+.tone-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r-md);padding:0 14px;height:48px;cursor:pointer;transition:border-color var(--ease)}
+.tone-row:hover{border-color:var(--accent)}
+.tone-left{display:flex;align-items:center;gap:9px;color:var(--soft);font-size:13.5px}
+.tone-opts{background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;display:none;margin-top:4px}
+.tone-opts.open{display:block}
+.tone-opt{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;font-size:13px;color:var(--soft);border-bottom:1px solid var(--border);transition:background var(--ease)}
+.tone-opt:last-child{border-bottom:none}
+.tone-opt:hover{background:rgba(255,255,255,.04)}
+.tone-opt.sel{color:var(--accent)}
+.tone-chk{margin-left:auto;color:var(--accent)}
+/* ── Settings ── */
+.sett-grp-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;padding:0 2px}
+.sett-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);border:1px solid var(--border);padding:13px 14px;cursor:pointer;transition:border-color var(--ease)}
+.sett-row:not(:last-of-type){border-bottom:none}
+.sett-row:first-of-type{border-radius:var(--r-md) var(--r-md) 0 0}
+.sett-row:last-of-type{border-radius:0 0 var(--r-md) var(--r-md)}
+.sett-row:only-child{border-radius:var(--r-md)}
+.sett-row:hover{border-color:rgba(74,222,128,.22)}
+.sett-left{display:flex;align-items:center;gap:10px;color:var(--soft);font-size:13.5px}
+.sett-ico{width:32px;height:32px;border-radius:8px;background:var(--bg-card2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0}
+.chevron{color:var(--muted);flex-shrink:0}
+.tog-sw{width:42px;height:24px;border-radius:12px;background:var(--accent);position:relative;cursor:pointer;transition:background var(--ease);flex-shrink:0}
+.tog-sw::after{content:'';position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#0F1118;transition:transform var(--ease)}
+.tog-sw.off{background:rgba(255,255,255,.15)}
+.tog-sw.off::after{transform:translateX(-18px)}
+/* ── Overlay / bottom sheet ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.overlay.open{opacity:1;pointer-events:all}
+.b-sheet{width:100%;background:var(--bg-card);border-radius:20px 20px 0 0;padding:18px 18px 32px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:75vh;overflow-y:auto}
+.overlay.open .b-sheet{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);margin:0 auto 16px}
+.sheet-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px}
+.sheet-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);cursor:pointer;font-size:13.5px;color:var(--soft);transition:color var(--ease)}
+.sheet-item:last-child{border-bottom:none}
+.sheet-item:hover{color:var(--accent)}
+.sheet-item.danger{color:#F87171}
+.sheet-item.danger:hover{color:#FCA5A5}
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;padding:24px}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{width:100%;max-width:360px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-xl);padding:22px 18px;transform:scale(.95);transition:transform .25s}
+.modal-overlay.open .modal-box{transform:scale(1)}
+.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px}
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:20px 16px;color:var(--muted);font-size:12.5px;line-height:1.7}
+.empty-state b{color:var(--accent);font-weight:600}
+/* ── Toast ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--r-pill);padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:opacity .3s,transform .3s;z-index:300;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── Ripple ── */
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.22);transform:scale(0);animation:rippleA .52s linear;pointer-events:none}
+@keyframes rippleA{to{transform:scale(4);opacity:0}}
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+/* ── Dashboard specific ── */
+.user-row{display:flex;align-items:center;gap:12px;padding:2px 16px 16px}
+.avatar{width:42px;height:42px;border-radius:50%;background:#1D4ED8;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.u-name{font-size:14px;font-weight:700;color:var(--text)}
+.u-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.prog-card{margin:0 16px 18px;background:linear-gradient(145deg,#0E3B26,#0A2818);border:1px solid rgba(74,222,128,.18);border-radius:var(--r-xl);padding:20px 18px;display:flex;flex-direction:column;align-items:center}
+.prog-ring{position:relative;width:88px;height:88px;margin-bottom:12px}
+.prog-ring svg{transform:rotate(-90deg)}
+.prog-ring-track{fill:none;stroke:#1A4730;stroke-width:8}
+.prog-ring-fill{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)}
+.prog-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.prog-pct{font-size:18px;font-weight:700;color:var(--text);line-height:1}
+.prog-ach{font-size:9px;color:var(--muted);margin-top:2px}
+.prog-title{font-size:14px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:3px}
+.prog-tasks{font-size:21px;font-weight:700;color:var(--accent);margin-bottom:6px}
+.prog-quote{font-size:11px;color:rgba(255,255,255,.5);font-style:italic;text-align:center;line-height:1.5}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;border:none;border-radius:var(--r-pill);background:var(--accent);color:#0F1118;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;position:relative;overflow:hidden;transition:background var(--ease),box-shadow var(--ease),transform var(--ease);box-shadow:0 4px 18px rgba(74,222,128,.22)}
+.add-btn:hover{background:#6EF09A;box-shadow:0 6px 26px rgba(74,222,128,.36)}
+.add-btn:active{transform:scale(.97)}
+.sec-block{margin-bottom:18px}
+/* ── Progress screen specific ── */
+.ov-card{margin:0 16px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-xl);padding:18px 16px}
+.ov-top{display:flex;align-items:center;gap:16px}
+.big-pct{width:76px;height:76px;border-radius:50%;background:var(--accent-g);border:3px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.big-n{font-size:20px;font-weight:700;color:var(--accent);line-height:1}
+.big-l{font-size:9px;color:var(--muted);margin-top:2px}
+.ov-right{flex:1;min-width:0}
+.ov-ttl{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.ov-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.streak-card{margin:0 16px 16px;background:linear-gradient(135deg,#0E3B26,#0A2818);border:1px solid rgba(74,222,128,.22);border-radius:var(--r-lg);padding:16px 18px}
+.streak-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:3px}
+.streak-sub{font-size:11px;color:rgba(255,255,255,.48);margin-bottom:10px}
+.streak-val{display:flex;align-items:center;gap:8px;font-size:30px;font-weight:700;color:var(--accent)}
+/* ── Weekly bar chart ── */
+.chart-card{margin:0 16px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 16px 12px}
+.chart-ttl{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.wk-chart{display:flex;align-items:flex-end;gap:5px;height:160px}
+.wk-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
+.wk-bar-area{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px}
+.wk-pct-lbl{font-size:9px;font-weight:700;color:var(--muted);text-align:center;min-height:12px;line-height:1}
+.wk-pct-lbl.today{color:var(--accent)}
+.wk-bar{width:100%;max-width:34px;border-radius:5px 5px 3px 3px;min-height:4px;transition:height 1.1s cubic-bezier(.4,0,.2,1)}
+.wk-bar.has-data{background:var(--accent);opacity:.82}
+.wk-bar.has-data.today{opacity:1}
+.wk-bar.empty-past{background:rgba(74,222,128,.18);opacity:1}
+.wk-bar.future{background:rgba(255,255,255,.07);opacity:1}
+.wk-day{font-size:10px;font-weight:600;color:var(--muted);margin-top:6px;text-align:center;flex-shrink:0}
+.wk-day.today{color:var(--accent);font-weight:700}
+/* ── Category bars ── */
+.cat-card{margin:0 16px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+.cat-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cat-row:last-child{margin-bottom:0}
+.cat-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-ico.hydration{background:rgba(146,64,14,.28);color:#FCD34D}
+.cat-ico.medication{background:rgba(30,58,138,.28);color:#93C5FD}
+.cat-ico.exercise{background:rgba(20,83,45,.28);color:var(--accent)}
+.cat-info{flex:1;min-width:0}
+.cat-nm{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:5px}
+.cat-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.cat-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.cat-fill.hydration{background:#FCD34D}
+.cat-fill.medication{background:#93C5FD}
+.cat-fill.exercise{background:var(--accent)}
+.cat-pct{font-size:12px;font-weight:700;color:var(--text);width:34px;text-align:right;flex-shrink:0}
+/* ── Recent completions ── */
+.recent-card{margin:0 16px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+.rc-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.rc-row:last-child{border-bottom:none}
+.rc-ico{width:34px;height:34px;border-radius:50%;background:var(--bg-card2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0}
+.rc-info{flex:1;min-width:0}
+.rc-name{font-size:12.5px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-time{font-size:11px;color:var(--muted);margin-top:2px}
+.rc-done{color:var(--accent);flex-shrink:0}
+/* ── Quote & tips ── */
+.quote-card{margin:0 16px 16px;background:var(--accent-g);border:1px solid rgba(74,222,128,.25);border-radius:var(--r-lg);padding:16px 18px;display:flex;align-items:flex-start;gap:12px}
+.q-ico{color:var(--accent);flex-shrink:0;margin-top:2px}
+.q-txt{font-size:13px;font-style:italic;color:var(--accent);font-weight:600;line-height:1.6}
+.q-date{font-size:10px;color:rgba(74,222,128,.6);margin-top:6px;font-style:normal}
+.tips-card{margin:0 16px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+.tips-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tips-date{font-size:10px;color:var(--muted);font-weight:600}
+.tip-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.tip-row:last-child{border-bottom:none}
+.tip-n{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#0F1118;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.tip-t{font-size:12.5px;color:var(--soft);line-height:1.55}
+/* ── Settings specific ── */
+.prof-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-xl);padding:18px 16px;display:flex;align-items:center;gap:14px;margin:0 16px 20px;cursor:pointer;transition:border-color var(--ease)}
+.prof-card:hover{border-color:rgba(74,222,128,.3)}
+.av-lg{width:52px;height:52px;border-radius:50%;background:#1D4ED8;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0}
+/* ── Reminder screen specific ── */
+.rem-mgmt-row{display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px;margin-bottom:8px;transition:border-color var(--ease)}
+.rem-mgmt-row:hover{border-color:rgba(74,222,128,.22)}
+.r-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.r-dot.hydration{background:#FCD34D}
+.r-dot.medication{background:#93C5FD}
+.r-dot.exercise{background:var(--accent)}
+.r-info{flex:1;min-width:0}
+.r-name{font-size:13px;font-weight:600;color:var(--text)}
+.r-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.r-edit,.r-del{background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;transition:color var(--ease)}
+.r-edit{color:var(--muted)}
+.r-edit:hover{color:var(--accent)}
+.r-del{color:var(--muted)}
+.r-del:hover{color:#F87171}
+.add-toggle{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;border:1.5px dashed rgba(74,222,128,.35);border-radius:var(--r-md);background:var(--accent-g);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px;transition:background var(--ease),border-color var(--ease)}
+.add-toggle:hover{background:rgba(74,222,128,.22);border-color:rgba(74,222,128,.55)}
+.form-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 16px;margin-bottom:20px;display:none}
+.form-panel.open{display:block}
+.fp-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.edit-banner{display:none;align-items:center;gap:8px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.22);border-radius:var(--r-md);padding:9px 14px;margin-bottom:12px;font-size:12px;font-weight:600;color:var(--accent)}
+.edit-banner.show{display:flex}
+.p-ico-wrap{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:5px}
+.p-ico-wrap.hydration{background:rgba(146,64,14,.28);color:#FCD34D}
+.p-ico-wrap.medication{background:rgba(30,58,138,.28);color:#93C5FD}
+.p-ico-wrap.exercise{background:rgba(20,83,45,.28);color:var(--accent)}
+.p-ico-wrap.custom{background:rgba(255,255,255,.08);color:var(--muted)}
+/* ── Info rows (settings about) ── */
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.i-lbl{color:var(--muted)}
+.i-val{color:var(--text);font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════
+     SCREEN: ONBOARDING
+════════════════════════════ -->
+<div id="pg-onboard" class="screen-page active">
+  <div class="auth-page">
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:26px">
+      <div style="width:70px;height:70px;border-radius:20px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent)">
+        <svg width="32" height="32" viewBox="0 0 28 28" fill="none"><rect x="2" y="5" width="15" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="20" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="17" width="12" height="3" rx="1.5" fill="currentColor"/><circle cx="21" cy="18.5" r="5" stroke="currentColor" stroke-width="2.2"/><path d="M19.5 18.5L21 20L23 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--accent);margin-top:10px">MyHealth Reminder</div>
+    </div>
+    <h1 style="font-size:24px;font-weight:700;color:var(--text);text-align:center;line-height:1.3;margin-bottom:10px">Your Daily Wellness<br/>Companion</h1>
+    <p style="font-size:13px;color:var(--muted);text-align:center;line-height:1.65;margin-bottom:30px">Take the first step towards a healthier,<br/>happier you with MyHealth Reminder.</p>
+    <div style="width:100%;display:flex;flex-direction:column;gap:12px;margin-bottom:30px">
+      <div style="display:flex;align-items:flex-start;gap:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px">
+        <div style="width:42px;height:42px;border-radius:11px;background:var(--accent-g);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="2" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div><span style="font-size:13.5px;font-weight:700;color:var(--text);display:block;margin-bottom:3px">Customizable Reminders</span><span style="font-size:12px;color:var(--muted);line-height:1.6;display:block">Set personalized reminders for hydration, medication, and exercise.</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px">
+        <div style="width:42px;height:42px;border-radius:11px;background:var(--accent-g);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 16l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><span style="font-size:13.5px;font-weight:700;color:var(--text);display:block;margin-bottom:3px">Simple Checklist Tracking</span><span style="font-size:12px;color:var(--muted);line-height:1.6;display:block">Easily mark daily health tasks as complete each day.</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px">
+        <div style="width:42px;height:42px;border-radius:11px;background:var(--accent-g);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div><span style="font-size:13.5px;font-weight:700;color:var(--text);display:block;margin-bottom:3px">Motivational Progress</span><span style="font-size:12px;color:var(--muted);line-height:1.6;display:block">Visualize your progress and stay motivated every day.</span></div>
+      </div>
+    </div>
+    <button class="btn-primary" id="obStartBtn" style="width:100%">Get Started</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN: LOGIN
+════════════════════════════ -->
+<div id="pg-login" class="screen-page">
+  <div class="auth-page">
+    <div class="auth-logo">
+      <div class="auth-logo-ico"><svg width="30" height="30" viewBox="0 0 28 28" fill="none"><rect x="2" y="5" width="15" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="20" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="17" width="12" height="3" rx="1.5" fill="currentColor"/><circle cx="21" cy="18.5" r="5" stroke="currentColor" stroke-width="2.2"/><path d="M19.5 18.5L21 20L23 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="auth-app-nm">MyHealth Reminder</span>
+    </div>
+    <h1 class="auth-title">Welcome back!</h1>
+    <p class="auth-sub">Sign in to continue your wellness journey.</p>
+    <div class="auth-form">
+      <div class="form-group">
+        <label class="form-lbl">Email</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M2 8l10 6 10-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <input class="form-input" id="li-email" type="email" inputmode="email" placeholder="you@email.com" autocomplete="email"/>
+        </div>
+        <p class="err-msg" id="li-emailErr">Please enter a valid email.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" id="li-pass" type="password" placeholder="Your password" autocomplete="current-password" style="padding-right:46px"/>
+          <button class="pw-tog" id="li-pwTog" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg></button>
+        </div>
+        <p class="err-msg" id="li-passErr">Incorrect email or password.</p>
+      </div>
+      <div style="margin-top:4px"><button class="btn-primary" id="li-btn">Sign In</button></div>
+      <div class="divider">or</div>
+      <button class="btn-outline" id="li-goSignup">Create an Account</button>
+      <div class="auth-foot" style="margin-top:14px"><a id="li-goBack">← Back to Welcome</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN: SIGNUP
+════════════════════════════ -->
+<div id="pg-signup" class="screen-page">
+  <div class="auth-page">
+    <div class="auth-logo">
+      <div class="auth-logo-ico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="5" width="15" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="20" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="17" width="12" height="3" rx="1.5" fill="currentColor"/><circle cx="21" cy="18.5" r="5" stroke="currentColor" stroke-width="2.2"/><path d="M19.5 18.5L21 20L23 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="auth-app-nm">MyHealth Reminder</span>
+    </div>
+    <h1 class="auth-title">Create Account</h1>
+    <p class="auth-sub">Start your wellness journey today.</p>
+    <div class="auth-form">
+      <div class="form-group">
+        <label class="form-lbl">Full Name</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <input class="form-input" id="su-name" type="text" placeholder="e.g. Mary Angel Grana" autocomplete="name"/>
+        </div>
+        <p class="err-msg" id="su-nameErr">Please enter your full name.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Email</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M2 8l10 6 10-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <input class="form-input" id="su-email" type="email" inputmode="email" placeholder="you@email.com" autocomplete="email"/>
+        </div>
+        <p class="err-msg" id="su-emailErr">Please enter a valid email.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" id="su-pass" type="password" placeholder="At least 6 characters" autocomplete="new-password" style="padding-right:46px"/>
+          <button class="pw-tog" id="su-pwTog1" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg></button>
+        </div>
+        <div class="str-bar"><div class="str-fill" id="su-strFill"></div></div>
+        <p class="str-txt" id="su-strTxt" style="color:var(--muted)"></p>
+        <p class="err-msg" id="su-passErr">Password must be at least 6 characters.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Confirm Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" id="su-pass2" type="password" placeholder="Re-enter password" autocomplete="new-password" style="padding-right:46px"/>
+          <button class="pw-tog" id="su-pwTog2" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg></button>
+        </div>
+        <p class="err-msg" id="su-pass2Err">Passwords do not match.</p>
+      </div>
+      <button class="btn-primary" id="su-btn">Create Account</button>
+      <div class="auth-foot">Already have an account? <a id="su-goLogin">Sign In</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN: DASHBOARD
+════════════════════════════ -->
+<div id="pg-dash" class="screen-page">
+  <div class="app-bar">
+    <div class="app-bar-left">
+      <div class="app-bar-logo"><svg width="20" height="20" viewBox="0 0 28 28" fill="none"><rect x="2" y="5" width="15" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="20" height="3" rx="1.5" fill="currentColor"/><rect x="2" y="17" width="12" height="3" rx="1.5" fill="currentColor"/><circle cx="21" cy="18.5" r="5" stroke="currentColor" stroke-width="2.2"/><path d="M19.5 18.5L21 20L23 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="app-bar-name">MyHealth Reminder</span>
+    </div>
+    <button class="icon-btn" id="dash-menuBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
+  </div>
+  <div class="user-row">
+    <div class="avatar" id="dash-avatar">M</div>
+    <div>
+      <div class="u-name" id="dash-name">Loading...</div>
+      <div class="u-sub" id="dash-sub">0 of 4 tasks completed today</div>
+    </div>
+  </div>
+  <div class="scroll-area">
+    <div class="prog-card">
+      <div class="prog-ring">
+        <svg width="88" height="88" viewBox="0 0 88 88"><circle class="prog-ring-track" cx="44" cy="44" r="36"/><circle class="prog-ring-fill" cx="44" cy="44" r="36" id="dash-ringFill" stroke-dasharray="226.19" stroke-dashoffset="226.19"/></svg>
+        <div class="prog-lbl"><span class="prog-pct" id="dash-ringPct">0%</span><span class="prog-ach">Achieved</span></div>
+      </div>
+      <div class="prog-title">Daily Progress</div>
+      <div class="prog-tasks" id="dash-progTasks">0/4 Tasks</div>
+      <div class="prog-quote" id="dash-quote">Consistency is the key to lasting wellness.</div>
+    </div>
+    <div class="pad">
+      <div class="sec-block">
+        <div class="sec-hdr">Today's Reminders</div>
+        <div class="card" id="dash-reminderList"></div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-hdr">Daily Checklist</div>
+        <div class="card" id="dash-checkList"></div>
+      </div>
+      <button class="add-btn" id="dash-addBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Add / Edit Reminders</button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('dash')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="nav-lbl">Home</span></button>
+    <button class="nav-btn" onclick="showPage('progress')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-lbl">Progress</span></button>
+    <button class="nav-btn" onclick="showPage('settings')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.8"/></svg><span class="nav-lbl">Settings</span></button>
+  </nav>
+  <div class="overlay" id="dash-menuOv"><div class="b-sheet"><div class="sheet-handle"></div><div class="sheet-title">Quick Actions</div><div class="sheet-item" id="dm-addrem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add New Reminder</div><div class="sheet-item" id="dm-reset"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 105.6-8.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="3 4 3 12 11 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Reset Checklist</div><div class="sheet-item" id="dm-progress"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>View Progress</div><div class="sheet-item danger" id="dm-logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sign Out</div></div></div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN: REMINDER
+════════════════════════════ -->
+<div id="pg-reminder" class="screen-page">
+  <div class="back-bar"><button class="back-btn" onclick="showPage('dash')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="back-title">Add / Edit Reminders</span></div>
+  <div class="scroll-area">
+    <div class="pad">
+      <div class="edit-banner" id="rem-editBanner"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rem-editTxt">Editing reminder</span><button style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;font-family:var(--font)" onclick="remCancelEdit()">Cancel</button></div>
+      <div class="sec-hdr" style="margin-bottom:10px">Your Reminders</div>
+      <div id="rem-mgmtList"></div>
+      <button class="add-toggle" id="rem-addToggle" onclick="remToggleForm()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Add New Reminder</button>
+      <div class="form-panel" id="rem-formPanel">
+        <div class="fp-title" id="rem-fpTitle">New Reminder</div>
+        <div class="form-group"><label class="form-lbl">Reminder Title</label><input class="form-input" id="rem-title" type="text" placeholder="e.g. Morning Hydration Goal"/><p class="err-msg" id="rem-titleErr">Please enter a title.</p></div>
+        <div class="form-group"><label class="form-lbl">Reminder Type</label><div class="toggle-grp" id="rem-typeGrp"><button class="tog-btn on" data-v="hydration" onclick="remSelType('hydration')">Hydration</button><button class="tog-btn" data-v="medication" onclick="remSelType('medication')">Medication</button><button class="tog-btn" data-v="exercise" onclick="remSelType('exercise')">Exercise</button></div></div>
+        <div class="form-group"><label class="form-lbl">Quick Presets</label><div class="preset-grid"><div class="preset-card on" data-p="water" onclick="remApplyPreset('water')"><div class="p-ico-wrap hydration"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 10 5 15a7 7 0 0014 0C19 10 12 2 12 2z" stroke="currentColor" stroke-width="2"/></svg></div><div class="preset-card-title">Daily Water Goal</div><div class="preset-card-desc">Drink 8 glasses of water daily</div></div><div class="preset-card" data-p="meds" onclick="remApplyPreset('meds')"><div class="p-ico-wrap medication"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3h6v2H9zM7 5h10v2H7zM5 7h14v13H5V7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div><div class="preset-card-title">Morning Medication</div><div class="preset-card-desc">Take medication after breakfast</div></div><div class="preset-card" data-p="stretch" onclick="remApplyPreset('stretch')"><div class="p-ico-wrap exercise"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M6 4v6l3 3-3 3v4M18 4v6l-3 3 3 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="preset-card-title">Evening Stretch</div><div class="preset-card-desc">10-min stretch before bed</div></div><div class="preset-card" data-p="custom" onclick="remApplyPreset('custom')"><div class="p-ico-wrap custom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="preset-card-title">Custom</div><div class="preset-card-desc">Build your own reminder</div></div></div></div>
+        <div class="form-group"><label class="form-lbl">Time</label><div class="input-icon-wrap"><span class="input-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><input class="form-input" id="rem-time" type="time" value="09:00"/></div></div>
+        <div class="form-group"><label class="form-lbl">Frequency</label><div class="toggle-grp" id="rem-freqGrp"><button class="tog-btn on" data-v="Daily" onclick="remSelFreq('Daily')">Daily</button><button class="tog-btn" data-v="Weekly" onclick="remSelFreq('Weekly')">Weekly</button><button class="tog-btn" data-v="Monthly" onclick="remSelFreq('Monthly')">Monthly</button></div></div>
+        <div class="form-group"><label class="form-lbl">Priority</label><select class="form-select" id="rem-priority"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select></div>
+        <div class="form-group"><label class="form-lbl">Notification Tone</label><div class="tone-row" onclick="document.getElementById('rem-toneOpts').classList.toggle('open')"><div class="tone-left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rem-toneLbl">Chime</span></div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tone-opts" id="rem-toneOpts"><div class="tone-opt sel" onclick="remSelTone('Chime',this)">Chime <svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tone-opt" onclick="remSelTone('Bell',this)">Bell</div><div class="tone-opt" onclick="remSelTone('Alert',this)">Alert</div><div class="tone-opt" onclick="remSelTone('Soft Ping',this)">Soft Ping</div><div class="tone-opt" onclick="remSelTone('Vibrate Only',this)">Vibrate Only</div></div></div>
+        <div class="form-group"><label class="form-lbl">Notes (optional)</label><textarea class="form-input" id="rem-notes" rows="2" placeholder="Any extra notes..."></textarea></div>
+        <button class="btn-primary" id="rem-saveBtn" onclick="remSave()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Save Reminder</button>
+        <button class="btn-ghost" onclick="remCancelEdit()" style="margin-top:6px">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN: PROGRESS
+════════════════════════════ -->
+<div id="pg-progress" class="screen-page">
+  <div class="app-bar"><div class="app-bar-left"><span class="app-bar-title">My Progress</span></div><button class="icon-btn" id="prog-menuBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button></div>
+  <div class="scroll-area">
+    <div style="padding-bottom:28px">
+      <div class="ov-card"><div class="sec-hdr" style="margin-bottom:14px">Overall Progress</div><div class="ov-top"><div class="big-pct"><span class="big-n" id="prog-pct">0%</span><span class="big-l">Achieved</span></div><div class="ov-right"><div class="ov-ttl" id="prog-msg">Let's start!</div><div class="ov-desc" id="prog-desc">Complete your daily tasks to build healthy habits.</div></div></div></div>
+      <div class="streak-card"><div class="streak-title">Current Streak</div><div class="streak-sub">Days of consistent task completion.</div><div class="streak-val"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="prog-streak">0 Days</span></div></div>
+      <div class="chart-card"><div class="chart-ttl">Weekly Task Completion</div><div class="chart-sub">Overview of tasks completed each day.</div><div class="wk-chart" id="prog-wkChart"></div></div>
+      <div class="cat-card"><div class="sec-hdr" style="margin-bottom:14px">By Category</div><div id="prog-catBreak"></div></div>
+      <div class="recent-card"><div class="sec-hdr" style="margin-bottom:4px">Recent Completions</div><div id="prog-recentList"></div></div>
+      <div class="quote-card"><div class="q-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" fill="currentColor" opacity=".4"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" fill="currentColor" opacity=".4"/></svg></div><div><div class="q-txt" id="prog-quote"></div><div class="q-date" id="prog-quoteDate"></div></div></div>
+      <div class="tips-card"><div class="tips-hdr"><div class="sec-hdr" style="margin-bottom:0">Today's Wellness Tips</div><div class="tips-date" id="prog-tipsDay"></div></div><div id="prog-tipsList"></div></div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="showPage('dash')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="nav-lbl">Home</span></button>
+    <button class="nav-btn active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-lbl">Progress</span></button>
+    <button class="nav-btn" onclick="showPage('settings')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.8"/></svg><span class="nav-lbl">Settings</span></button>
+  </nav>
+  <div class="overlay" id="prog-menuOv"><div class="b-sheet"><div class="sheet-handle"></div><div class="sheet-title">Progress Options</div><div class="sheet-item" id="pm-reset"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 105.6-8.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="3 4 3 12 11 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Reset Today's Progress</div><div class="sheet-item danger" id="pm-logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sign Out</div></div></div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN: SETTINGS
+════════════════════════════ -->
+<div id="pg-settings" class="screen-page">
+  <div class="app-bar"><div class="app-bar-left"><span class="app-bar-title">Settings</span></div><button class="icon-btn" id="set-menuBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button></div>
+  <div class="scroll-area">
+    <div style="padding-bottom:32px">
+      <div class="prof-card" id="set-profCard"><div class="av-lg" id="set-av">M</div><div><div style="font-size:15px;font-weight:700;color:var(--text)" id="set-name">Loading...</div><div style="font-size:12px;color:var(--muted);margin-top:2px" id="set-email">user@email.com</div><div style="font-size:11px;color:var(--accent);margin-top:3px">Tap to edit profile</div></div><svg style="margin-left:auto;color:var(--muted)" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <div style="padding:0 16px">
+        <div class="sett-grp-lbl" style="margin-bottom:8px">Notifications</div>
+        <div style="margin-bottom:18px">
+          <div class="sett-row"><div class="sett-left"><div class="sett-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Push Notifications</div><div class="tog-sw" id="sw-push" onclick="togSw('push',this)"></div></div>
+          <div class="sett-row"><div class="sett-left"><div class="sett-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Reminder Sound</div><div class="tog-sw" id="sw-sound" onclick="togSw('sound',this)"></div></div>
+          <div class="sett-row"><div class="sett-left"><div class="sett-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="2" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Vibration</div><div class="tog-sw off" id="sw-vibrate" onclick="togSw('vibrate',this)"></div></div>
+        </div>
+        <div class="sett-grp-lbl" style="margin-bottom:8px">Wellness</div>
+        <div style="margin-bottom:18px">
+          <div class="sett-row" id="set-resetChk"><div class="sett-left"><div class="sett-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 105.6-8.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="3 4 3 12 11 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Reset Today's Checklist</div><svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div class="sett-row" id="set-clearHist"><div class="sett-left"><div class="sett-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 11v6M14 11v6M9 6V4h6v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Clear Activity History</div><svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div class="sett-row"><div class="sett-left"><div class="sett-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Weekly Progress Report</div><div class="tog-sw" id="sw-report" onclick="togSw('report',this)"></div></div>
+          <div class="sett-row"><div class="sett-left"><div class="sett-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Daily Motivational Quotes</div><div class="tog-sw" id="sw-quotes" onclick="togSw('quotes',this)"></div></div>
+        </div>
+        <div class="sett-grp-lbl" style="margin-bottom:8px">About</div>
+        <div class="card" style="margin-bottom:18px"><div class="info-row"><span class="i-lbl">App Name</span><span class="i-val">MyHealth Reminder</span></div><div class="info-row"><span class="i-lbl">Version</span><span class="i-val">1.0.0</span></div><div class="info-row"><span class="i-lbl">Purpose</span><span class="i-val">Daily Wellness Companion</span></div></div>
+        <button class="btn-outline" id="set-signOut" style="margin-bottom:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sign Out</button>
+        <button class="btn-danger" id="set-resetAll">Reset All App Data</button>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="showPage('dash')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="nav-lbl">Home</span></button>
+    <button class="nav-btn" onclick="showPage('progress')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-lbl">Progress</span></button>
+    <button class="nav-btn active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.8"/></svg><span class="nav-lbl">Settings</span></button>
+  </nav>
+  <div class="overlay" id="set-menuOv"><div class="b-sheet"><div class="sheet-handle"></div><div class="sheet-title">More Options</div><div class="sheet-item" id="sm-edit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Edit Profile</div><div class="sheet-item danger" id="sm-logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sign Out</div></div></div>
+  <div class="modal-overlay" id="set-editModal"><div class="modal-box"><div class="modal-title">Edit Profile</div><div class="form-group"><label class="form-lbl">Full Name</label><input class="form-input" id="set-editName" type="text" placeholder="Your name"/></div><div style="display:flex;gap:10px;margin-top:6px"><button class="btn-primary" style="flex:1" id="set-saveProfBtn">Save</button><button id="set-cancelProfBtn" style="flex:1;height:50px;border:1px solid var(--border);border-radius:var(--r-pill);background:none;color:var(--muted);font-family:var(--font);font-size:13.5px;font-weight:600;cursor:pointer">Cancel</button></div></div></div>
+</div>
+
+<!-- Toast -->
+<div id="_toast" class="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   STORAGE  (pure ES5, no Object.assign)
+════════════════════════════════════════ */
+function dbLoad(key) {
+  try { var r = localStorage.getItem(key); return r ? JSON.parse(r) : null; } catch(e){ return null; }
+}
+function dbSave(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){}
+}
+function objClone(o) {
+  var r = {}; for (var k in o) { if (o.hasOwnProperty(k)) r[k] = o[k]; } return r;
+}
+function objSet(o, key, val) { var r = objClone(o); r[key] = val; return r; }
+
+/* ── Session key prefix ── */
+function uk(base) {
+  var s = dbLoad('mh_session'); return (s && s.id) ? base + '_' + s.id : base;
+}
+function todayStr() {
+  var d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+
+/* ════════════════════════════════════════
+   DEFAULT DATA
+════════════════════════════════════════ */
+var DEF_CHK = [
+  {id:'c1',label:'Drink 8 glasses of water',done:false},
+  {id:'c2',label:'Take morning medication',done:false},
+  {id:'c3',label:'30-minute walk',done:false},
+  {id:'c4',label:'Meditate for 10 minutes',done:false}
+];
+function defChk() {
+  var r = []; for (var i=0;i<DEF_CHK.length;i++) r.push(objClone(DEF_CHK[i])); return r;
+}
+
+/* ════════════════════════════════════════
+   AUTH
+════════════════════════════════════════ */
+var AUTH = {
+  users: function(){ return dbLoad('mh_users')||[]; },
+  session: function(){ return dbLoad('mh_session')||null; },
+  loggedIn: function(){ var s=this.session(); return !!(s&&s.id); },
+
+  register: function(name,email,pass){
+    var users=this.users(), el=email.toLowerCase(), i;
+    for(i=0;i<users.length;i++){ if(users[i].email===el) return {ok:false,msg:'Email already registered.'}; }
+    var u={id:'u'+Date.now(),name:name,email:el,password:pass};
+    users.push(u); dbSave('mh_users',users);
+    dbSave('mh_session',{id:u.id,name:u.name,email:u.email});
+    return {ok:true,user:u};
+  },
+
+  login: function(email,pass){
+    var users=this.users(), el=email.toLowerCase(), found=null, i;
+    for(i=0;i<users.length;i++){
+      if(users[i].email===el && users[i].password===pass){ found=users[i]; break; }
+    }
+    if(!found) return {ok:false,msg:'Incorrect email or password.'};
+    dbSave('mh_session',{id:found.id,name:found.name,email:found.email});
+    return {ok:true,user:found};
+  },
+
+  logout: function(){ localStorage.removeItem('mh_session'); showPage('login'); },
+
+  updateName: function(name){
+    var s=this.session(); if(!s) return;
+    var users=this.users(), i;
+    for(i=0;i<users.length;i++){ if(users[i].id===s.id){ users[i].name=name; break; } }
+    dbSave('mh_users',users);
+    dbSave('mh_session',{id:s.id,name:name,email:s.email});
+  }
+};
+
+/* ════════════════════════════════════════
+   WEEKLY HISTORY
+════════════════════════════════════════ */
+var WHIST = {
+  key: function(){ return uk('mh_weekly'); },
+  dkey: function(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); },
+
+  savePastDay: function(dateKey, pct){
+    if(!dateKey) return;
+    var data=dbLoad(this.key())||{};
+    data[dateKey]=(pct===undefined||pct===null)?0:pct;
+    var keys=[],k; for(k in data){if(data.hasOwnProperty(k)) keys.push(k);} keys.sort();
+    if(keys.length>30){ var t={},i; for(i=keys.length-30;i<keys.length;i++) t[keys[i]]=data[keys[i]]; data=t; }
+    dbSave(this.key(),data);
+  },
+
+  saveToday: function(pct){ var data=dbLoad(this.key())||{}; data[this.dkey(new Date())]=pct; dbSave(this.key(),data); },
+
+  getWeek: function(){
+    var data=dbLoad(this.key())||{}, today=new Date();
+    var ti=(today.getDay()+6)%7, days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], res=[];
+    for(var i=0;i<7;i++){
+      var d=new Date(today.getTime()); d.setDate(d.getDate()+(i-ti));
+      var k=this.dkey(d), val=(data[k]!==undefined&&data[k]!==null)?data[k]:0;
+      res.push({day:days[i],val:val,isToday:i===ti,isFuture:i>ti});
+    }
+    return res;
+  }
+};
+
+/* ════════════════════════════════════════
+   CHECKLIST
+════════════════════════════════════════ */
+function chkProgress(list){
+  if(!list||!list.length) return {done:0,total:0,pct:0};
+  var done=0,i; for(i=0;i<list.length;i++){if(list[i].done) done++;}
+  return {done:done,total:list.length,pct:Math.round((done/list.length)*100)};
+}
+
+var CHK = {
+  _reset: function(){
+    var today=todayStr(), last=dbLoad(uk('mh_chk_day'));
+    if(last===today) return;
+    var existing=dbLoad(uk('mh_chk_items'));
+    if(existing&&existing.length&&last) WHIST.savePastDay(last, chkProgress(existing).pct);
+    var items=existing||defChk(), reset=[], i;
+    for(i=0;i<items.length;i++) reset.push(objSet(items[i],'done',false));
+    dbSave(uk('mh_chk_items'),reset); dbSave(uk('mh_chk_day'),today);
+  },
+
+  get: function(){
+    this._reset();
+    var items=dbLoad(uk('mh_chk_items'));
+    if(!items||!items.length){ items=defChk(); dbSave(uk('mh_chk_items'),items); dbSave(uk('mh_chk_day'),todayStr()); }
+    return items;
+  },
+
+  toggle: function(id){
+    this._reset();
+    var list=this.get(), newList=[], toggled=null, i;
+    for(i=0;i<list.length;i++){
+      if(list[i].id===id){ var u=objSet(list[i],'done',!list[i].done); newList.push(u); toggled=u; }
+      else newList.push(list[i]);
+    }
+    dbSave(uk('mh_chk_items'),newList);
+    if(toggled&&toggled.done) HIST.log(toggled.label);
+    return newList;
+  },
+
+  reset: function(){
+    var items=dbLoad(uk('mh_chk_items'))||defChk(), r=[], i;
+    for(i=0;i<items.length;i++) r.push(objSet(items[i],'done',false));
+    dbSave(uk('mh_chk_items'),r);
+  },
+
+  progress: function(){ return chkProgress(this.get()); }
+};
+
+/* ════════════════════════════════════════
+   REMINDERS
+════════════════════════════════════════ */
+var REM = {
+  getAll: function(){ return dbLoad(uk('mh_reminders'))||[]; },
+  add: function(r){ var list=this.getAll(); r.id='r'+Date.now(); list.push(r); dbSave(uk('mh_reminders'),list); return r; },
+  update: function(r){ var list=this.getAll(),i; for(i=0;i<list.length;i++){if(list[i].id===r.id){list[i]=r;break;}} dbSave(uk('mh_reminders'),list); },
+  del: function(id){ var list=this.getAll(),nl=[],i; for(i=0;i<list.length;i++){if(list[i].id!==id) nl.push(list[i]);} dbSave(uk('mh_reminders'),nl); }
+};
+
+/* ════════════════════════════════════════
+   HISTORY
+════════════════════════════════════════ */
+var HIST = {
+  get: function(){ return dbLoad(uk('mh_history'))||[]; },
+  log: function(label){ var l=this.get(); l.unshift({label:label,ts:Date.now()}); if(l.length>40) l=l.slice(0,40); dbSave(uk('mh_history'),l); },
+  clear: function(){ dbSave(uk('mh_history'),[]); }
+};
+
+/* ════════════════════════════════════════
+   STREAK
+════════════════════════════════════════ */
+var STREAK = {
+  get: function(){ return dbLoad(uk('mh_streak'))||{days:0,lastDate:null}; },
+  update: function(){
+    var s=this.get(), today=new Date().toDateString();
+    if(s.lastDate===today) return s.days;
+    var yest=new Date(Date.now()-86400000).toDateString();
+    var days=(s.lastDate===yest)?s.days+1:1;
+    dbSave(uk('mh_streak'),{days:days,lastDate:today}); return days;
+  }
+};
+
+/* ════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════ */
+var SETT = {
+  get: function(){ return dbLoad(uk('mh_settings'))||{push:true,sound:true,vibrate:false,report:true,quotes:true}; },
+  set: function(k,v){ var s=this.get(); s[k]=v; dbSave(uk('mh_settings'),s); }
+};
+
+/* ════════════════════════════════════════
+   QUOTES & TIPS  (daily rotating)
+════════════════════════════════════════ */
+var QUOTES=[
+  '"Consistency is more important than perfection. Every small step counts!"',
+  '"Your health is an investment, not an expense."',
+  '"Small daily improvements lead to stunning results."',
+  '"Take care of your body. It\'s the only place you have to live."',
+  '"Wellness is not a destination, it\'s a daily practice."',
+  '"Progress, not perfection. You\'re doing great!"',
+  '"Every healthy choice brings you closer to your best self."',
+  '"A journey of a thousand miles begins with a single step."',
+  '"Invest in your health today for a better tomorrow."',
+  '"The groundwork for all happiness is good health."',
+  '"He who has health has hope, and he who has hope has everything."',
+  '"Healthy habits are learned the same way as unhealthy ones — through practice."',
+  '"Your body hears everything your mind says. Stay positive!"',
+  '"Taking care of yourself is productivity."',
+  '"Rest when you\'re weary. Refresh and renew yourself."',
+  '"Health is not about the weight you lose, but about the life you gain."',
+  '"You don\'t have to be great to start, but you have to start to be great."',
+  '"Small steps every day lead to big changes over time."',
+  '"Drink more water. Sleep more. Move more. Stress less."',
+  '"Your future self will thank you for the healthy choices you make today."',
+  '"Every day is a new opportunity to improve your health."',
+  '"Strive for progress, not perfection."',
+  '"Take it one day at a time. You\'re doing better than you think."',
+  '"Wellness is the complete integration of body, mind, and spirit."',
+  '"The secret to a healthy life is no secret — just daily action."',
+  '"Be patient with yourself. Nothing in nature blooms all year."',
+  '"You are one workout away from a better mood."',
+  '"Start where you are. Use what you have. Do what you can."',
+  '"Nourish your body, calm your mind, and move with purpose."',
+  '"An apple a day keeps the doctor away — start simple!"',
+  '"Believe you can and you\'re halfway there."'
+];
+var TIPS=[
+  ['Start your week strong — drink a full glass of water before your morning coffee.','A 10-minute walk after lunch improves digestion and boosts afternoon energy.','Write down one wellness goal for the week and review it each morning.','Prep healthy snacks for the week so you always have good options ready.'],
+  ['Stretch for 5 minutes after waking up to loosen joints and improve circulation.','Add one extra serving of vegetables to at least one meal today.','Practice the 20-20-20 rule: every 20 minutes, look 20 feet away for 20 seconds.','Take the stairs instead of the elevator whenever you get the chance.'],
+  ['Midweek check-in: review your progress on this week\'s wellness goal.','Deep breathing for 5 minutes can significantly reduce stress and anxiety.','Drink water before every meal — it aids digestion and helps portion control.','Swap a sugary snack for a piece of fruit or a handful of nuts today.'],
+  ['Getting 7-9 hours of sleep is one of the best things you can do for your health.','Try a 2-minute mindfulness pause between tasks to reset your focus.','Posture check! Sit up straight, relax your shoulders, and unclench your jaw.','Reach out to a friend or family member — social connection boosts wellbeing.'],
+  ['End your week by celebrating one healthy habit you kept this week.','Plan your weekend meals in advance to avoid unhealthy impulse choices.','A 30-minute evening walk is a great way to wind down after a busy week.','Limit screen time one hour before bed to improve sleep quality tonight.'],
+  ['Use your weekend to try a new physical activity — hiking, cycling, or yoga.','Cook a nutritious meal at home — you control every ingredient.','Spend time outdoors today. Natural light and fresh air do wonders for your mood.','Practice gratitude: write down three things you are thankful for today.'],
+  ['Use Sunday to set your intentions for a healthy week ahead.','Prepare your checklist and reminders for tomorrow so you start strong.','Get to bed at a consistent time tonight — your body clock will thank you.','Reflect on last week: what healthy habit are you most proud of?']
+];
+function dailyQuote(){ var d=new Date(),s=new Date(d.getFullYear(),0,0),dy=Math.floor((d-s)/86400000); return QUOTES[dy%QUOTES.length]; }
+function dailyTips(){ return TIPS[(new Date().getDay()+6)%7]; }
+
+/* ════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════ */
+function fmtTime(t){
+  if(!t) return '';
+  var p=t.split(':'),hr=parseInt(p[0],10);
+  return (hr%12||12)+':'+p[1]+' '+(hr<12?'AM':'PM');
+}
+function fmtRel(ts){
+  var diff=Date.now()-ts,mins=Math.floor(diff/60000),hours=Math.floor(diff/3600000),days=Math.floor(diff/86400000);
+  if(mins<1) return 'Just now';
+  if(mins<60) return mins+'m ago';
+  if(hours<24) return 'Today, '+fmtTime(new Date(ts).toTimeString().slice(0,5));
+  if(days===1) return 'Yesterday, '+fmtTime(new Date(ts).toTimeString().slice(0,5));
+  var d=new Date(ts); return d.toLocaleDateString('en-US',{weekday:'short'})+', '+fmtTime(d.toTimeString().slice(0,5));
+}
+function showToast(msg){
+  var el=document.getElementById('_toast');
+  el.textContent=msg; el.className='toast show';
+  if(el._t) clearTimeout(el._t);
+  el._t=setTimeout(function(){el.className='toast';},2500);
+}
+function ripple(btn,e){
+  var old=btn.querySelector('.ripple'); if(old&&old.parentNode) old.parentNode.removeChild(old);
+  var rect=btn.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
+  var sp=document.createElement('span'); sp.className='ripple';
+  sp.style.width=size+'px'; sp.style.height=size+'px';
+  sp.style.left=(e.clientX-rect.left-size/2)+'px'; sp.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(sp);
+  sp.addEventListener('animationend',function(){if(sp.parentNode) sp.parentNode.removeChild(sp);});
+}
+
+/* ════════════════════════════════════════
+   PAGE NAVIGATION  (no location.href — stays in single file)
+════════════════════════════════════════ */
+function showPage(name){
+  var pages=['onboard','login','signup','dash','reminder','progress','settings'];
+  for(var i=0;i<pages.length;i++){
+    var el=document.getElementById('pg-'+pages[i]);
+    if(el) el.className='screen-page'+(pages[i]===name?' active':'');
+  }
+  if(name==='dash') initDash();
+  if(name==='progress') initProgress();
+  if(name==='settings') initSettings();
+  if(name==='reminder') initReminder();
+  window.scrollTo(0,0);
+}
+
+/* ════════════════════════════════════════
+   ONBOARDING
+════════════════════════════════════════ */
+document.getElementById('obStartBtn').onclick=function(e){
+  ripple(e.currentTarget,e);
+  setTimeout(function(){showPage('login');},280);
+};
+
+/* ════════════════════════════════════════
+   LOGIN
+════════════════════════════════════════ */
+document.getElementById('li-pwTog').onclick=function(){
+  var i=document.getElementById('li-pass'); i.type=i.type==='password'?'text':'password';
+};
+document.getElementById('li-goSignup').onclick=function(){showPage('signup');};
+document.getElementById('li-goBack').onclick=function(){showPage('onboard');};
+
+function doLogin(){
+  var email=document.getElementById('li-email').value.trim();
+  var pass=document.getElementById('li-pass').value;
+  var eErr=document.getElementById('li-emailErr'),pErr=document.getElementById('li-passErr');
+  eErr.className='err-msg'; pErr.className='err-msg';
+  var ok=true;
+  if(!email||email.indexOf('@')===-1){eErr.className='err-msg show';ok=false;}
+  if(!pass){pErr.textContent='Password is required.';pErr.className='err-msg show';ok=false;}
+  if(!ok) return;
+  var res=AUTH.login(email,pass);
+  if(!res.ok){pErr.textContent=res.msg;pErr.className='err-msg show';return;}
+  showToast('Welcome back, '+res.user.name.split(' ')[0]+'!');
+  setTimeout(function(){showPage('dash');},400);
+}
+document.getElementById('li-btn').onclick=function(e){ripple(e.currentTarget,e);doLogin();};
+document.getElementById('li-email').onkeydown=function(e){if(e.key==='Enter') doLogin();};
+document.getElementById('li-pass').onkeydown=function(e){if(e.key==='Enter') doLogin();};
+
+/* ════════════════════════════════════════
+   SIGNUP
+════════════════════════════════════════ */
+document.getElementById('su-pwTog1').onclick=function(){var i=document.getElementById('su-pass');i.type=i.type==='password'?'text':'password';};
+document.getElementById('su-pwTog2').onclick=function(){var i=document.getElementById('su-pass2');i.type=i.type==='password'?'text':'password';};
+document.getElementById('su-goLogin').onclick=function(){showPage('login');};
+document.getElementById('su-pass').oninput=function(){
+  var v=this.value,s=0;
+  if(v.length>=6)s++;if(v.length>=10)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+  var cols=['','#F87171','#FBBF24','#60A5FA','#4ADE80','#4ADE80'],labs=['','Weak','Fair','Good','Strong','Very strong'];
+  var fill=document.getElementById('su-strFill'),txt=document.getElementById('su-strTxt');
+  fill.style.width=(s/5*100)+'%'; fill.style.background=cols[s]||'';
+  txt.textContent=v?labs[s]:''; txt.style.color=cols[s]||'var(--muted)';
+};
+function doSignup(){
+  var name=document.getElementById('su-name').value.trim();
+  var email=document.getElementById('su-email').value.trim();
+  var pass=document.getElementById('su-pass').value;
+  var pass2=document.getElementById('su-pass2').value;
+  var ids=['su-nameErr','su-emailErr','su-passErr','su-pass2Err'],i;
+  for(i=0;i<ids.length;i++) document.getElementById(ids[i]).className='err-msg';
+  var ok=true;
+  if(!name){document.getElementById('su-nameErr').className='err-msg show';ok=false;}
+  if(!email||email.indexOf('@')===-1){document.getElementById('su-emailErr').className='err-msg show';ok=false;}
+  if(pass.length<6){document.getElementById('su-passErr').className='err-msg show';ok=false;}
+  if(pass!==pass2){document.getElementById('su-pass2Err').className='err-msg show';ok=false;}
+  if(!ok) return;
+  var res=AUTH.register(name,email,pass);
+  if(!res.ok){document.getElementById('su-emailErr').textContent=res.msg;document.getElementById('su-emailErr').className='err-msg show';return;}
+  showToast('Welcome, '+name.split(' ')[0]+'! Account created.');
+  setTimeout(function(){showPage('dash');},400);
+}
+document.getElementById('su-btn').onclick=function(e){ripple(e.currentTarget,e);doSignup();};
+var suInputs=['su-name','su-email','su-pass','su-pass2'];
+for(var _i=0;_i<suInputs.length;_i++){
+  (function(id){document.getElementById(id).onkeydown=function(e){if(e.key==='Enter') doSignup();};}(suInputs[_i]));
+}
+
+/* ════════════════════════════════════════
+   DASHBOARD
+════════════════════════════════════════ */
+var ICONS={
+  hydration:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 10 5 15a7 7 0 0014 0C19 10 12 2 12 2z" stroke="currentColor" stroke-width="2"/></svg>',
+  medication:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 3h6v2H9zM7 5h10v2H7zM5 7h14v13a1 1 0 01-1 1H6a1 1 0 01-1-1V7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 11v6M9 14h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  exercise:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 4v6l3 3-3 3v4M18 4v6l-3 3 3 3v4M3 9h4M17 9h4M3 15h4M17 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+};
+
+function initDash(){
+  if(!AUTH.loggedIn()){showPage('login');return;}
+  var sess=AUTH.session();
+  document.getElementById('dash-avatar').textContent=sess.name.charAt(0).toUpperCase();
+  document.getElementById('dash-name').textContent=sess.name;
+  document.getElementById('dash-quote').textContent=dailyQuote();
+  dashRenderReminders(); dashRenderChecklist();
+  setTimeout(dashUpdateProgress,80);
+}
+function dashRenderReminders(){
+  var list=REM.getAll(),el=document.getElementById('dash-reminderList'),html='',i,r,ico,tc;
+  if(!list.length){el.innerHTML='<div class="empty-state">No reminders yet.<br/><b>Tap "Add / Edit Reminders" below</b> to add your first one!</div>';return;}
+  for(i=0;i<list.length;i++){
+    r=list[i]; ico=ICONS[r.type]||ICONS.hydration; tc=r.type.charAt(0).toUpperCase()+r.type.slice(1);
+    html+='<div class="rem-row"><div class="rem-ico '+r.type+'">'+ico+'</div><span class="rem-name">'+r.title+'</span><span class="tag '+r.type+'">'+tc+'</span><span class="rem-time">'+fmtTime(r.time)+'</span><button class="icon-del" onclick="dashDelRem(\''+r.id+'\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>';
+  }
+  el.innerHTML=html;
+}
+function dashRenderChecklist(){
+  var list=CHK.get(),html='',i,c,ck;
+  for(i=0;i<list.length;i++){
+    c=list[i];
+    ck=c.done?'<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#0F1118" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>':'';
+    html+='<div class="chk-item" onclick="dashToggle(\''+c.id+'\')">'+'<div class="chk-box'+(c.done?' done':'')+'">'+ck+'</div>'+'<span class="chk-lbl'+(c.done?' done':'')+'">'+c.label+'</span></div>';
+  }
+  document.getElementById('dash-checkList').innerHTML=html;
+  dashUpdateProgress();
+}
+function dashUpdateProgress(){
+  var p=CHK.progress(),C=226.19,off=C-(p.pct/100)*C;
+  document.getElementById('dash-ringFill').style.strokeDashoffset=off;
+  document.getElementById('dash-ringPct').textContent=p.pct+'%';
+  document.getElementById('dash-progTasks').textContent=p.done+'/'+p.total+' Tasks';
+  document.getElementById('dash-sub').textContent=p.done+' of '+p.total+' tasks completed today';
+  WHIST.saveToday(p.pct);
+}
+window.dashToggle=function(id){CHK.toggle(id);dashRenderChecklist();};
+window.dashDelRem=function(id){REM.del(id);dashRenderReminders();showToast('Reminder removed.');};
+
+/* Dash menu */
+var dashOv=document.getElementById('dash-menuOv');
+document.getElementById('dash-menuBtn').onclick=function(){dashOv.classList.add('open');};
+dashOv.onclick=function(e){if(e.target===dashOv) dashOv.classList.remove('open');};
+document.getElementById('dm-addrem').onclick=function(){dashOv.classList.remove('open');showPage('reminder');};
+document.getElementById('dm-reset').onclick=function(){CHK.reset();dashRenderChecklist();showToast('Checklist reset!');dashOv.classList.remove('open');};
+document.getElementById('dm-progress').onclick=function(){dashOv.classList.remove('open');showPage('progress');};
+document.getElementById('dm-logout').onclick=function(){dashOv.classList.remove('open');AUTH.logout();};
+document.getElementById('dash-addBtn').onclick=function(e){ripple(e.currentTarget,e);setTimeout(function(){showPage('reminder');},200);};
+
+/* ════════════════════════════════════════
+   PROGRESS
+════════════════════════════════════════ */
+function initProgress(){
+  if(!AUTH.loggedIn()){showPage('login');return;}
+  var p=CHK.progress();
+  document.getElementById('prog-pct').textContent=p.pct+'%';
+  var msgs;
+  if(p.pct>=80) msgs=["You're doing great!","Keep up the excellent work towards your wellness goals."];
+  else if(p.pct>=50) msgs=["Good progress!","You're halfway there. Keep pushing forward!"];
+  else if(p.pct>=20) msgs=["Keep going!","Every task completed brings you closer to your goal."];
+  else msgs=["Let's start!","Complete your daily tasks to build healthy habits."];
+  document.getElementById('prog-msg').textContent=msgs[0];
+  document.getElementById('prog-desc').textContent=msgs[1];
+
+  /* Streak */
+  var sd=STREAK.update(); document.getElementById('prog-streak').textContent=sd+(sd===1?' Day':' Days');
+
+  /* Weekly bar chart */
+  var weekly=WHIST.getWeek(), maxVal=0, i, d;
+  for(i=0;i<weekly.length;i++){if(!weekly[i].isFuture&&weekly[i].val>maxVal) maxVal=weekly[i].val;}
+  if(maxVal===0) maxVal=100;
+  var CHART_H=110, html='';
+  for(i=0;i<weekly.length;i++){
+    d=weekly[i];
+    var barH,barCls,lclsCls;
+    if(d.isFuture){barH=CHART_H;barCls='wk-bar future';}
+    else if(d.val===0){barH=4;barCls='wk-bar empty-past';}
+    else{barH=Math.max(8,Math.round((d.val/maxVal)*CHART_H));barCls='wk-bar has-data'+(d.isToday?' today':'');}
+    lclsCls='wk-day'+(d.isToday?' today':'');
+    var pctLbl=(!d.isFuture&&d.val>0)?d.val+'%':'';
+    var pctCls='wk-pct-lbl'+(d.isToday?' today':'');
+    html+='<div class="wk-col">'
+      +'<div class="wk-bar-area">'
+      +'<div class="'+pctCls+'">'+pctLbl+'</div>'
+      +'<div class="'+barCls+'" style="height:'+barH+'px"></div>'
+      +'</div>'
+      +'<div class="'+lclsCls+'">'+d.day+'</div>'
+      +'</div>';
+  }
+  document.getElementById('prog-wkChart').innerHTML=html;
+
+  /* Category */
+  var cats=[
+    {type:'hydration',label:'Hydration',pct:p.pct>0?Math.min(100,p.pct+10):0,ico:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 10 5 15a7 7 0 0014 0C19 10 12 2 12 2z" stroke="currentColor" stroke-width="2"/></svg>'},
+    {type:'medication',label:'Medication',pct:p.pct>0?Math.min(100,p.pct+5):0,ico:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3h6v2H9zM7 5h10v2H7zM5 7h14v13H5V7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>'},
+    {type:'exercise',label:'Exercise',pct:p.pct>0?Math.max(0,p.pct-10):0,ico:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M6 4v6l3 3-3 3v4M18 4v6l-3 3 3 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'}
+  ];
+  var catHtml='',c2;
+  for(i=0;i<cats.length;i++){
+    c2=cats[i];
+    catHtml+='<div class="cat-row"><div class="cat-ico '+c2.type+'">'+c2.ico+'</div><div class="cat-info"><div class="cat-nm">'+c2.label+'</div><div class="cat-bar"><div class="cat-fill '+c2.type+'" style="width:'+c2.pct+'%"></div></div></div><div class="cat-pct">'+c2.pct+'%</div></div>';
+  }
+  document.getElementById('prog-catBreak').innerHTML=catHtml;
+
+  /* Recent */
+  var hist=HIST.get(), rcEl=document.getElementById('prog-recentList'), rcHtml='', shown;
+  if(!hist.length){rcEl.innerHTML='<div class="empty-state">No completions yet.<br/>Check off tasks on the <b>Home</b> screen!</div>';}
+  else{
+    shown=Math.min(hist.length,6);
+    for(i=0;i<shown;i++){
+      rcHtml+='<div class="rc-row"><div class="rc-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 10 5 15a7 7 0 0014 0C19 10 12 2 12 2z" stroke="currentColor" stroke-width="2"/></svg></div><div class="rc-info"><div class="rc-name">'+hist[i].label+'</div><div class="rc-time">'+fmtRel(hist[i].ts)+'</div></div><div class="rc-done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>';
+    }
+    rcEl.innerHTML=rcHtml;
+  }
+
+  /* Quote & tips */
+  var now=new Date();
+  var dnames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var mnames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('prog-quote').textContent=dailyQuote();
+  document.getElementById('prog-quoteDate').textContent=dnames[now.getDay()]+', '+mnames[now.getMonth()]+' '+now.getDate();
+  var tips=dailyTips(), tipsHtml=''; document.getElementById('prog-tipsDay').textContent=dnames[now.getDay()];
+  for(i=0;i<tips.length;i++) tipsHtml+='<div class="tip-row"><div class="tip-n">'+(i+1)+'</div><div class="tip-t">'+tips[i]+'</div></div>';
+  document.getElementById('prog-tipsList').innerHTML=tipsHtml;
+
+  /* Menu */
+  var progOv=document.getElementById('prog-menuOv');
+  document.getElementById('prog-menuBtn').onclick=function(){progOv.classList.add('open');};
+  progOv.onclick=function(e){if(e.target===progOv) progOv.classList.remove('open');};
+  document.getElementById('pm-reset').onclick=function(){CHK.reset();WHIST.saveToday(0);showToast('Progress reset!');progOv.classList.remove('open');initProgress();};
+  document.getElementById('pm-logout').onclick=function(){AUTH.logout();};
+}
+
+/* ════════════════════════════════════════
+   REMINDERS
+════════════════════════════════════════ */
+var remEditId=null, remType='hydration', remFreq='Daily', remTone='Chime';
+var remPresets={
+  water:{title:'Morning Hydration Goal',type:'hydration',time:'08:00',freq:'Daily'},
+  meds:{title:'Morning Medication',type:'medication',time:'09:30',freq:'Daily'},
+  stretch:{title:'Evening Stretch',type:'exercise',time:'20:00',freq:'Daily'},
+  custom:{title:'',type:'hydration',time:'09:00',freq:'Daily'}
+};
+function initReminder(){
+  if(!AUTH.loggedIn()){showPage('login');return;}
+  remRenderList();
+}
+function remRenderList(){
+  var list=REM.getAll(),el=document.getElementById('rem-mgmtList'),html='',i,r,tc;
+  if(!list.length){el.innerHTML='<div class="empty-state">No reminders yet.<br/><b>Tap "Add New Reminder" below</b> to create your first one!</div>';return;}
+  for(i=0;i<list.length;i++){
+    r=list[i]; tc=r.type.charAt(0).toUpperCase()+r.type.slice(1);
+    html+='<div class="rem-mgmt-row"><div class="r-dot '+r.type+'"></div><div class="r-info"><div class="r-name">'+r.title+'</div><div class="r-meta">'+tc+' · '+fmtTime(r.time)+' · '+r.freq+'</div></div><button class="r-edit" onclick="remStartEdit(\''+r.id+'\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="r-del" onclick="remDel(\''+r.id+'\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 11v6M14 11v6M9 6V4h6v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>';
+  }
+  el.innerHTML=html;
+}
+window.remSelType=function(v){
+  remType=v;
+  var btns=document.getElementById('rem-typeGrp').querySelectorAll('.tog-btn'),i;
+  for(i=0;i<btns.length;i++) btns[i].className='tog-btn'+(btns[i].getAttribute('data-v')===v?' on':'');
+};
+window.remSelFreq=function(v){
+  remFreq=v;
+  var btns=document.getElementById('rem-freqGrp').querySelectorAll('.tog-btn'),i;
+  for(i=0;i<btns.length;i++) btns[i].className='tog-btn'+(btns[i].getAttribute('data-v')===v?' on':'');
+};
+window.remSelTone=function(name,el){
+  remTone=name; document.getElementById('rem-toneLbl').textContent=name;
+  var opts=document.querySelectorAll('.tone-opt'),i,chk;
+  for(i=0;i<opts.length;i++){
+    opts[i].className='tone-opt'+(opts[i]===el?' sel':'');
+    chk=opts[i].querySelector('.tone-chk'); if(chk&&chk.parentNode) chk.parentNode.removeChild(chk);
+  }
+  el.insertAdjacentHTML('beforeend','<svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>');
+  document.getElementById('rem-toneOpts').classList.remove('open');
+};
+window.remApplyPreset=function(k){
+  var cards=document.querySelectorAll('.preset-card'),i;
+  for(i=0;i<cards.length;i++) cards[i].className='preset-card'+(cards[i].getAttribute('data-p')===k?' on':'');
+  var pr=remPresets[k]; if(pr.title) document.getElementById('rem-title').value=pr.title;
+  remSelType(pr.type); document.getElementById('rem-time').value=pr.time; remSelFreq(pr.freq);
+};
+window.remToggleForm=function(){
+  var panel=document.getElementById('rem-formPanel');
+  if(panel.classList.contains('open')){remCancelEdit();return;}
+  remEditId=null; remResetForm(); panel.classList.add('open');
+  document.getElementById('rem-fpTitle').textContent='New Reminder';
+  document.getElementById('rem-addToggle').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Close';
+};
+window.remStartEdit=function(id){
+  var list=REM.getAll(),r=null,i;
+  for(i=0;i<list.length;i++){if(list[i].id===id){r=list[i];break;}}
+  if(!r) return;
+  remEditId=id;
+  document.getElementById('rem-title').value=r.title;
+  document.getElementById('rem-time').value=r.time;
+  document.getElementById('rem-notes').value=r.notes||'';
+  document.getElementById('rem-priority').value=r.priority||'normal';
+  remSelType(r.type); remSelFreq(r.freq||'Daily'); remTone=r.tone||'Chime';
+  document.getElementById('rem-toneLbl').textContent=remTone;
+  document.getElementById('rem-editTxt').textContent='Editing: '+r.title;
+  document.getElementById('rem-editBanner').className='edit-banner show';
+  document.getElementById('rem-formPanel').classList.add('open');
+  document.getElementById('rem-fpTitle').textContent='Edit Reminder';
+  document.getElementById('rem-addToggle').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Close';
+};
+window.remCancelEdit=function(){
+  remEditId=null;
+  document.getElementById('rem-formPanel').classList.remove('open');
+  document.getElementById('rem-editBanner').className='edit-banner';
+  document.getElementById('rem-addToggle').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg> Add New Reminder';
+  remResetForm();
+};
+function remResetForm(){
+  document.getElementById('rem-title').value=''; document.getElementById('rem-time').value='09:00';
+  document.getElementById('rem-notes').value=''; document.getElementById('rem-priority').value='normal';
+  document.getElementById('rem-titleErr').className='err-msg';
+  remSelType('hydration'); remSelFreq('Daily'); remTone='Chime';
+  document.getElementById('rem-toneLbl').textContent='Chime';
+  var cards=document.querySelectorAll('.preset-card'),i;
+  for(i=0;i<cards.length;i++) cards[i].className='preset-card'+(i===0?' on':'');
+}
+window.remDel=function(id){
+  if(!confirm('Delete this reminder?')) return;
+  REM.del(id); remRenderList(); showToast('Reminder deleted.');
+};
+window.remSave=function(){
+  var title=document.getElementById('rem-title').value.trim();
+  var errEl=document.getElementById('rem-titleErr');
+  errEl.className='err-msg';
+  if(!title){errEl.className='err-msg show';document.getElementById('rem-title').focus();return;}
+  var r={id:remEditId||('r'+Date.now()),title:title,type:remType,time:document.getElementById('rem-time').value,
+    freq:remFreq,tone:remTone,notes:document.getElementById('rem-notes').value.trim(),
+    priority:document.getElementById('rem-priority').value,enabled:true};
+  if(remEditId) REM.update(r); else REM.add(r);
+  var btn=document.getElementById('rem-saveBtn');
+  btn.textContent=remEditId?'Updated!':'Saved!'; btn.style.background='#22C55E';
+  showToast(remEditId?'Reminder updated!':'Reminder added!');
+  setTimeout(function(){remCancelEdit();remRenderList();btn.textContent='Save Reminder';btn.style.background='';},900);
+};
+
+/* ════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════ */
+function initSettings(){
+  if(!AUTH.loggedIn()){showPage('login');return;}
+  var sess=AUTH.session();
+  document.getElementById('set-av').textContent=sess.name.charAt(0).toUpperCase();
+  document.getElementById('set-name').textContent=sess.name;
+  document.getElementById('set-email').textContent=sess.email;
+  var s=SETT.get();
+  var swIds=['push','sound','vibrate','report','quotes'],i;
+  for(i=0;i<swIds.length;i++){
+    var el=document.getElementById('sw-'+swIds[i]);
+    if(el) el.className='tog-sw'+(s[swIds[i]]===false||swIds[i]==='vibrate'&&!s[swIds[i]]?' off':'');
+  }
+}
+window.togSw=function(key,el){
+  el.classList.toggle('off'); SETT.set(key,!el.classList.contains('off'));
+  showToast(key.charAt(0).toUpperCase()+key.slice(1)+' '+(el.classList.contains('off')?'disabled':'enabled'));
+};
+document.getElementById('set-profCard').onclick=function(){
+  document.getElementById('set-editName').value=AUTH.session().name;
+  document.getElementById('set-editModal').classList.add('open');
+};
+document.getElementById('set-cancelProfBtn').onclick=function(){document.getElementById('set-editModal').classList.remove('open');};
+document.getElementById('set-editModal').onclick=function(e){if(e.target===this) this.classList.remove('open');};
+document.getElementById('set-saveProfBtn').onclick=function(){
+  var name=document.getElementById('set-editName').value.trim(); if(!name) return;
+  AUTH.updateName(name); initSettings(); document.getElementById('set-editModal').classList.remove('open'); showToast('Profile updated!');
+};
+document.getElementById('set-resetChk').onclick=function(){if(!confirm('Reset today\'s checklist?')) return; CHK.reset(); showToast('Checklist reset!');};
+document.getElementById('set-clearHist').onclick=function(){if(!confirm('Clear activity history?')) return; HIST.clear(); showToast('History cleared.');};
+document.getElementById('set-signOut').onclick=function(){AUTH.logout();};
+document.getElementById('set-resetAll').onclick=function(){if(!confirm('Delete ALL app data?')) return; localStorage.clear(); showPage('onboard');};
+var setOv=document.getElementById('set-menuOv');
+document.getElementById('set-menuBtn').onclick=function(){setOv.classList.add('open');};
+setOv.onclick=function(e){if(e.target===setOv) setOv.classList.remove('open');};
+document.getElementById('sm-edit').onclick=function(){setOv.classList.remove('open');document.getElementById('set-profCard').click();};
+document.getElementById('sm-logout').onclick=function(){AUTH.logout();};
+
+/* ════════════════════════════════════════
+   BOOT — check session on load
+════════════════════════════════════════ */
+(function(){
+  if(AUTH.loggedIn()){ showPage('dash'); }
+  else { showPage('onboard'); }
+}());
+</script>
+</body>
+</html>
