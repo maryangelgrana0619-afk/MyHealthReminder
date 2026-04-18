@@ -640,7 +640,11 @@ var AUTH = {
     return {ok:true,user:found};
   },
 
-  logout: function(){ localStorage.removeItem('mh_session'); showPage('login'); },
+  logout: function(){ 
+    try { localStorage.removeItem('mh_session'); } catch(e){} 
+    delete STORAGE_FALLBACK['mh_session']; 
+    showPage('login'); 
+  },
 
   updateName: function(name){
     var s=this.session(); if(!s) return;
