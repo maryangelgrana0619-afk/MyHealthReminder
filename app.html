@@ -916,8 +916,8 @@ document.getElementById('su-pass').oninput=function(){
 function doSignup(){
   var name=document.getElementById('su-name').value.trim();
   var email=document.getElementById('su-email').value.trim();
-  var pass=document.getElementById('su-pass').value;
-  var pass2=document.getElementById('su-pass2').value;
+  var pass=document.getElementById('su-pass').value.trim();
+  var pass2=document.getElementById('su-pass2').value.trim();
   var ids=['su-nameErr','su-emailErr','su-passErr','su-pass2Err'],i;
   for(i=0;i<ids.length;i++) document.getElementById(ids[i]).className='err-msg';
   var ok=true;
@@ -928,7 +928,13 @@ function doSignup(){
   if(!ok) return;
   var res=AUTH.register(name,email,pass);
   if(!res.ok){document.getElementById('su-emailErr').textContent=res.msg;document.getElementById('su-emailErr').className='err-msg show';return;}
-  /* Go directly to dashboard — session is already saved by register() */
+  var loginRes = AUTH.login(email, pass);
+  if(!loginRes.ok){
+    document.getElementById('su-passErr').textContent='Account created, but automatic login failed. Please sign in.';
+    document.getElementById('su-passErr').className='err-msg show';
+    showPage('login');
+    return;
+  }
   showToast('Welcome, '+name.split(' ')[0]+'! Account created.');
   showPage('dash');
 }
