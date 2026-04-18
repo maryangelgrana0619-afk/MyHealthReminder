@@ -572,11 +572,20 @@ textarea.form-input{height:auto;padding-top:12px;resize:none;line-height:1.55}
 /* ════════════════════════════════════════
    STORAGE  (pure ES5, no Object.assign)
 ════════════════════════════════════════ */
+var STORAGE_FALLBACK = {};
 function dbLoad(key) {
-  try { var r = localStorage.getItem(key); return r ? JSON.parse(r) : null; } catch(e){ return null; }
+  try { 
+    var r = localStorage.getItem(key); 
+    if(r) return JSON.parse(r);
+  } catch(e){ }
+  return STORAGE_FALLBACK.hasOwnProperty(key) ? STORAGE_FALLBACK[key] : null;
 }
 function dbSave(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){}
+  try { 
+    localStorage.setItem(key, JSON.stringify(val)); 
+  } catch(e){ 
+    STORAGE_FALLBACK[key] = val;
+  }
 }
 function objClone(o) {
   var r = {}; for (var k in o) { if (o.hasOwnProperty(k)) r[k] = o[k]; } return r;
