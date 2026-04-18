@@ -928,13 +928,6 @@ function doSignup(){
   if(!ok) return;
   var res=AUTH.register(name,email,pass);
   if(!res.ok){document.getElementById('su-emailErr').textContent=res.msg;document.getElementById('su-emailErr').className='err-msg show';return;}
-  var loginRes = AUTH.login(email, pass);
-  if(!loginRes.ok){
-    document.getElementById('su-passErr').textContent='Account created, but automatic login failed. Please sign in.';
-    document.getElementById('su-passErr').className='err-msg show';
-    showPage('login');
-    return;
-  }
   showToast('Welcome, '+name.split(' ')[0]+'! Account created.');
   showPage('dash');
 }
