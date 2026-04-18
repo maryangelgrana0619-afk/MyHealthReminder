@@ -492,7 +492,8 @@ textarea.form-input{height:auto;padding-top:12px;resize:none;line-height:1.55}
         <div class="form-group"><label class="form-lbl">Quick Presets</label><div class="preset-grid"><div class="preset-card on" data-p="water" onclick="remApplyPreset('water')"><div class="p-ico-wrap hydration"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 10 5 15a7 7 0 0014 0C19 10 12 2 12 2z" stroke="currentColor" stroke-width="2"/></svg></div><div class="preset-card-title">Daily Water Goal</div><div class="preset-card-desc">Drink 8 glasses of water daily</div></div><div class="preset-card" data-p="meds" onclick="remApplyPreset('meds')"><div class="p-ico-wrap medication"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3h6v2H9zM7 5h10v2H7zM5 7h14v13H5V7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div><div class="preset-card-title">Morning Medication</div><div class="preset-card-desc">Take medication after breakfast</div></div><div class="preset-card" data-p="stretch" onclick="remApplyPreset('stretch')"><div class="p-ico-wrap exercise"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M6 4v6l3 3-3 3v4M18 4v6l-3 3 3 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="preset-card-title">Evening Stretch</div><div class="preset-card-desc">10-min stretch before bed</div></div><div class="preset-card" data-p="custom" onclick="remApplyPreset('custom')"><div class="p-ico-wrap custom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="preset-card-title">Custom</div><div class="preset-card-desc">Build your own reminder</div></div></div></div>
         <div class="form-group"><label class="form-lbl">Time</label><div class="input-icon-wrap"><span class="input-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><input class="form-input" id="rem-time" type="time" value="09:00"/></div></div>
         <div class="form-group"><label class="form-lbl">Frequency</label><div class="toggle-grp" id="rem-freqGrp"><button class="tog-btn on" data-v="Daily" onclick="remSelFreq('Daily')">Daily</button><button class="tog-btn" data-v="Weekly" onclick="remSelFreq('Weekly')">Weekly</button><button class="tog-btn" data-v="Monthly" onclick="remSelFreq('Monthly')">Monthly</button></div></div>
-        <div class="form-group"><label class="form-lbl">Priority</label><select class="form-select" id="rem-priority"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select></div>
+        <div class="form-group" id="rem-daysGrp" style="display:none"><label class="form-lbl">Repeat on Days</label><div class="toggle-grp" id="rem-daysRow"><button class="tog-btn" data-v="Mon" onclick="remTogDay(this)">Mon</button><button class="tog-btn" data-v="Tue" onclick="remTogDay(this)">Tue</button><button class="tog-btn" data-v="Wed" onclick="remTogDay(this)">Wed</button><button class="tog-btn" data-v="Thu" onclick="remTogDay(this)">Thu</button><button class="tog-btn" data-v="Fri" onclick="remTogDay(this)">Fri</button><button class="tog-btn" data-v="Sat" onclick="remTogDay(this)">Sat</button><button class="tog-btn" data-v="Sun" onclick="remTogDay(this)">Sun</button></div></div>
+        <div class="form-group"><label class="form-lbl">Priority</label><div class="tone-row" onclick="document.getElementById('rem-priOpts').classList.toggle('open')"><div class="tone-left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rem-priLbl">Normal</span></div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tone-opts" id="rem-priOpts"><div class="tone-opt sel" onclick="remSelPri('Normal',this)">Normal <svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tone-opt" onclick="remSelPri('High',this)">High</div><div class="tone-opt" onclick="remSelPri('Low',this)">Low</div></div></div>
         <div class="form-group"><label class="form-lbl">Notification Tone</label><div class="tone-row" onclick="document.getElementById('rem-toneOpts').classList.toggle('open')"><div class="tone-left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rem-toneLbl">Chime</span></div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tone-opts" id="rem-toneOpts"><div class="tone-opt sel" onclick="remSelTone('Chime',this)">Chime <svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tone-opt" onclick="remSelTone('Bell',this)">Bell</div><div class="tone-opt" onclick="remSelTone('Alert',this)">Alert</div><div class="tone-opt" onclick="remSelTone('Soft Ping',this)">Soft Ping</div><div class="tone-opt" onclick="remSelTone('Vibrate Only',this)">Vibrate Only</div></div></div>
         <div class="form-group"><label class="form-lbl">Notes (optional)</label><textarea class="form-input" id="rem-notes" rows="2" placeholder="Any extra notes..."></textarea></div>
         <button class="btn-primary" id="rem-saveBtn" onclick="remSave()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Save Reminder</button>
@@ -874,18 +875,25 @@ document.getElementById('li-goSignup').onclick=function(){showPage('signup');};
 document.getElementById('li-goBack').onclick=function(){showPage('onboard');};
 
 function doLogin(){
-  var email=document.getElementById('li-email').value.trim();
-  var pass=document.getElementById('li-pass').value;
+  var emailRaw=document.getElementById('li-email').value;
+  var passRaw=document.getElementById('li-pass').value;
+  /* Trim carefully — remove spaces/newlines from start and end only */
+  var email=emailRaw.replace(/^\s+|\s+$/g,'');
+  var pass=passRaw.replace(/^\s+|\s+$/g,'');
   var eErr=document.getElementById('li-emailErr'),pErr=document.getElementById('li-passErr');
   eErr.className='err-msg'; pErr.className='err-msg';
   var ok=true;
-  if(!email||email.indexOf('@')===-1){eErr.className='err-msg show';ok=false;}
+  if(!email||email.indexOf('@')===-1){eErr.textContent='Please enter a valid email.';eErr.className='err-msg show';ok=false;}
   if(!pass){pErr.textContent='Password is required.';pErr.className='err-msg show';ok=false;}
   if(!ok) return;
   var res=AUTH.login(email,pass);
-  if(!res.ok){pErr.textContent=res.msg;pErr.className='err-msg show';return;}
+  if(!res.ok){
+    pErr.textContent=res.msg;
+    pErr.className='err-msg show';
+    return;
+  }
   showToast('Welcome back, '+res.user.name.split(' ')[0]+'!');
-  setTimeout(function(){showPage('dash');},400);
+  showPage('dash');
 }
 document.getElementById('li-btn').onclick=function(e){ripple(e.currentTarget,e);doLogin();};
 document.getElementById('li-email').onkeydown=function(e){if(e.key==='Enter') doLogin();};
@@ -920,8 +928,9 @@ function doSignup(){
   if(!ok) return;
   var res=AUTH.register(name,email,pass);
   if(!res.ok){document.getElementById('su-emailErr').textContent=res.msg;document.getElementById('su-emailErr').className='err-msg show';return;}
+  /* Go directly to dashboard — session is already saved by register() */
   showToast('Welcome, '+name.split(' ')[0]+'! Account created.');
-  setTimeout(function(){showPage('dash');},400);
+  showPage('dash');
 }
 document.getElementById('su-btn').onclick=function(e){ripple(e.currentTarget,e);doSignup();};
 var suInputs=['su-name','su-email','su-pass','su-pass2'];
@@ -1005,20 +1014,24 @@ function initProgress(){
   /* Streak */
   var sd=STREAK.update(); document.getElementById('prog-streak').textContent=sd+(sd===1?' Day':' Days');
 
-  /* Weekly bar chart */
-  var weekly=WHIST.getWeek(), maxVal=0, i, d;
-  for(i=0;i<weekly.length;i++){if(!weekly[i].isFuture&&weekly[i].val>maxVal) maxVal=weekly[i].val;}
-  if(maxVal===0) maxVal=100;
+  /* Weekly bar chart — height = actual completion % of full container height */
+  var weekly=WHIST.getWeek(), i, d;
   var CHART_H=110, html='';
   for(i=0;i<weekly.length;i++){
     d=weekly[i];
-    var barH,barCls,lclsCls;
-    if(d.isFuture){barH=CHART_H;barCls='wk-bar future';}
-    else if(d.val===0){barH=4;barCls='wk-bar empty-past';}
-    else{barH=Math.max(8,Math.round((d.val/maxVal)*CHART_H));barCls='wk-bar has-data'+(d.isToday?' today':'');}
-    lclsCls='wk-day'+(d.isToday?' today':'');
-    var pctLbl=(!d.isFuture&&d.val>0)?d.val+'%':'';
-    var pctCls='wk-pct-lbl'+(d.isToday?' today':'');
+    var barH,barCls,pctLbl,pctCls;
+    if(d.isFuture){
+      barH=CHART_H; barCls='wk-bar future'; pctLbl=''; pctCls='wk-pct-lbl';
+    } else if(d.val===0){
+      barH=4; barCls='wk-bar empty-past'; pctLbl=''; pctCls='wk-pct-lbl';
+    } else {
+      /* Height is directly proportional to actual % — 100% fills full chart height */
+      barH=Math.max(8,Math.round((d.val/100)*CHART_H));
+      barCls='wk-bar has-data'+(d.isToday?' today':'');
+      pctLbl=d.val+'%';
+      pctCls='wk-pct-lbl'+(d.isToday?' today':'');
+    }
+    var lclsCls='wk-day'+(d.isToday?' today':'');
     html+='<div class="wk-col">'
       +'<div class="wk-bar-area">'
       +'<div class="'+pctCls+'">'+pctLbl+'</div>'
@@ -1074,7 +1087,7 @@ function initProgress(){
 /* ════════════════════════════════════════
    REMINDERS
 ════════════════════════════════════════ */
-var remEditId=null, remType='hydration', remFreq='Daily', remTone='Chime';
+var remEditId=null, remType='hydration', remFreq='Daily', remTone='Chime', remPriority='Normal', remSelDays=[];
 var remPresets={
   water:{title:'Morning Hydration Goal',type:'hydration',time:'08:00',freq:'Daily'},
   meds:{title:'Morning Medication',type:'medication',time:'09:30',freq:'Daily'},
@@ -1103,16 +1116,33 @@ window.remSelFreq=function(v){
   remFreq=v;
   var btns=document.getElementById('rem-freqGrp').querySelectorAll('.tog-btn'),i;
   for(i=0;i<btns.length;i++) btns[i].className='tog-btn'+(btns[i].getAttribute('data-v')===v?' on':'');
+  /* Show days group only for Weekly */
+  document.getElementById('rem-daysGrp').style.display=(v==='Weekly')?'block':'none';
 };
 window.remSelTone=function(name,el){
   remTone=name; document.getElementById('rem-toneLbl').textContent=name;
-  var opts=document.querySelectorAll('.tone-opt'),i,chk;
+  var opts=document.querySelectorAll('#rem-toneOpts .tone-opt'),i,chk;
   for(i=0;i<opts.length;i++){
     opts[i].className='tone-opt'+(opts[i]===el?' sel':'');
     chk=opts[i].querySelector('.tone-chk'); if(chk&&chk.parentNode) chk.parentNode.removeChild(chk);
   }
   el.insertAdjacentHTML('beforeend','<svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>');
   document.getElementById('rem-toneOpts').classList.remove('open');
+};
+window.remSelPri=function(name,el){
+  remPriority=name; document.getElementById('rem-priLbl').textContent=name;
+  var opts=document.querySelectorAll('#rem-priOpts .tone-opt'),i,chk;
+  for(i=0;i<opts.length;i++){
+    opts[i].className='tone-opt'+(opts[i]===el?' sel':'');
+    chk=opts[i].querySelector('.tone-chk'); if(chk&&chk.parentNode) chk.parentNode.removeChild(chk);
+  }
+  el.insertAdjacentHTML('beforeend','<svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>');
+  document.getElementById('rem-priOpts').classList.remove('open');
+};
+window.remTogDay=function(btn){
+  btn.classList.toggle('on');
+  var v=btn.getAttribute('data-v'), idx=remSelDays.indexOf(v);
+  if(idx>-1) remSelDays.splice(idx,1); else remSelDays.push(v);
 };
 window.remApplyPreset=function(k){
   var cards=document.querySelectorAll('.preset-card'),i;
@@ -1135,9 +1165,13 @@ window.remStartEdit=function(id){
   document.getElementById('rem-title').value=r.title;
   document.getElementById('rem-time').value=r.time;
   document.getElementById('rem-notes').value=r.notes||'';
-  document.getElementById('rem-priority').value=r.priority||'normal';
-  remSelType(r.type); remSelFreq(r.freq||'Daily'); remTone=r.tone||'Chime';
-  document.getElementById('rem-toneLbl').textContent=remTone;
+  remSelType(r.type); remSelFreq(r.freq||'Daily');
+  remTone=r.tone||'Chime'; document.getElementById('rem-toneLbl').textContent=remTone;
+  remPriority=r.priority||'Normal'; document.getElementById('rem-priLbl').textContent=remPriority;
+  /* Restore saved days */
+  remSelDays=r.days?r.days.slice():[];
+  var dayBtns=document.getElementById('rem-daysRow').querySelectorAll('.tog-btn'),j;
+  for(j=0;j<dayBtns.length;j++) dayBtns[j].className='tog-btn'+(remSelDays.indexOf(dayBtns[j].getAttribute('data-v'))>-1?' on':'');
   document.getElementById('rem-editTxt').textContent='Editing: '+r.title;
   document.getElementById('rem-editBanner').className='edit-banner show';
   document.getElementById('rem-formPanel').classList.add('open');
@@ -1153,12 +1187,25 @@ window.remCancelEdit=function(){
 };
 function remResetForm(){
   document.getElementById('rem-title').value=''; document.getElementById('rem-time').value='09:00';
-  document.getElementById('rem-notes').value=''; document.getElementById('rem-priority').value='normal';
+  document.getElementById('rem-notes').value='';
   document.getElementById('rem-titleErr').className='err-msg';
-  remSelType('hydration'); remSelFreq('Daily'); remTone='Chime';
+  remSelType('hydration'); remSelFreq('Daily'); remTone='Chime'; remPriority='Normal'; remSelDays=[];
   document.getElementById('rem-toneLbl').textContent='Chime';
-  var cards=document.querySelectorAll('.preset-card'),i;
-  for(i=0;i<cards.length;i++) cards[i].className='preset-card'+(i===0?' on':'');
+  document.getElementById('rem-priLbl').textContent='Normal';
+  document.getElementById('rem-daysGrp').style.display='none';
+  /* Reset day buttons */
+  var dayBtns=document.getElementById('rem-daysRow').querySelectorAll('.tog-btn'),i;
+  for(i=0;i<dayBtns.length;i++) dayBtns[i].className='tog-btn';
+  /* Reset preset cards */
+  var cards=document.querySelectorAll('.preset-card'),j;
+  for(j=0;j<cards.length;j++) cards[j].className='preset-card'+(j===0?' on':'');
+  /* Reset priority option highlight */
+  var priOpts=document.querySelectorAll('#rem-priOpts .tone-opt'),k,chk;
+  for(k=0;k<priOpts.length;k++){
+    priOpts[k].className='tone-opt'+(k===0?' sel':'');
+    chk=priOpts[k].querySelector('.tone-chk'); if(chk&&chk.parentNode) chk.parentNode.removeChild(chk);
+  }
+  if(priOpts.length>0) priOpts[0].insertAdjacentHTML('beforeend','<svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>');
 }
 window.remDel=function(id){
   if(!confirm('Delete this reminder?')) return;
@@ -1171,7 +1218,7 @@ window.remSave=function(){
   if(!title){errEl.className='err-msg show';document.getElementById('rem-title').focus();return;}
   var r={id:remEditId||('r'+Date.now()),title:title,type:remType,time:document.getElementById('rem-time').value,
     freq:remFreq,tone:remTone,notes:document.getElementById('rem-notes').value.trim(),
-    priority:document.getElementById('rem-priority').value,enabled:true};
+    priority:remPriority,days:remSelDays.slice(),enabled:true};
   if(remEditId) REM.update(r); else REM.add(r);
   var btn=document.getElementById('rem-saveBtn');
   btn.textContent=remEditId?'Updated!':'Saved!'; btn.style.background='#22C55E';
