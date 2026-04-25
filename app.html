@@ -928,7 +928,7 @@ function ripple(btn,e){
    PAGE NAVIGATION  (no location.href — stays in single file)
 ════════════════════════════════════════ */
 function showPage(name){
-  var pages=['onboard','login','signup','dash','reminder','progress','settings'];
+  var pages=['onboard','login','signup','dash','reminder','progress','settings','about'];
   for(var i=0;i<pages.length;i++){
     var el=document.getElementById('pg-'+pages[i]);
     if(el) el.className='screen-page'+(pages[i]===name?' active':'');
