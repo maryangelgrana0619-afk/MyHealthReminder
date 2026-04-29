@@ -1277,7 +1277,34 @@ function _playSoftPing(){
   o.start(t); o.stop(t+0.55);
 }
 function _playVibrateOnly(){
-  if(navigator.vibrate){ navigator.vibrate([200,100,200]); }
+  /* Method 1: Standard Web API (works in most browsers) */
+  try{ if(navigator.vibrate){ navigator.vibrate([200,100,200]); } }catch(e){}
+  /* Method 2: MIT App Inventor WebViewString bridge — your .aia must have a WebViewer
+     with a WebViewStringChange event that calls the Phone's Vibrate block */
+  try{
+    if(window.AppInventor){
+      AppInventor.setWebViewString('VIBRATE');
+    }
+  }catch(e){}
+  /* Method 3: Generic Android JS bridge some WebView wrappers expose */
+  try{
+    if(window.Android && Android.vibrate){ Android.vibrate(500); }
+  }catch(e){}
+  /* Method 4: Low-frequency audio buzz as fallback (felt through speaker on many phones) */
+  var ac=_getAC();
+  if(ac){
+    [[0,200],[300,200]].forEach(function(p){
+      var start=ac.currentTime+p[0]/1000, dur=p[1]/1000;
+      var o=ac.createOscillator(),g=ac.createGain();
+      o.type='sine'; o.frequency.value=60;
+      g.gain.setValueAtTime(0,start);
+      g.gain.linearRampToValueAtTime(1.0,start+0.01);
+      g.gain.setValueAtTime(1.0,start+dur-0.02);
+      g.gain.linearRampToValueAtTime(0,start+dur);
+      o.connect(g); g.connect(ac.destination);
+      o.start(start); o.stop(start+dur+0.05);
+    });
+  }
 }
 var TONE_PLAYERS={
   'Chime':_playChime,
