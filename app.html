@@ -521,7 +521,7 @@ textarea.form-input{height:auto;padding-top:12px;resize:none;line-height:1.55}
         <div class="form-group"><label class="form-lbl">Frequency</label><div class="toggle-grp" id="rem-freqGrp"><button class="tog-btn on" data-v="Daily" onclick="remSelFreq('Daily')">Daily</button><button class="tog-btn" data-v="Weekly" onclick="remSelFreq('Weekly')">Weekly</button><button class="tog-btn" data-v="Monthly" onclick="remSelFreq('Monthly')">Monthly</button></div></div>
         <div class="form-group" id="rem-daysGrp" style="display:none"><label class="form-lbl">Repeat on Days</label><div class="toggle-grp" id="rem-daysRow"><button class="tog-btn" data-v="Mon" onclick="remTogDay(this)">Mon</button><button class="tog-btn" data-v="Tue" onclick="remTogDay(this)">Tue</button><button class="tog-btn" data-v="Wed" onclick="remTogDay(this)">Wed</button><button class="tog-btn" data-v="Thu" onclick="remTogDay(this)">Thu</button><button class="tog-btn" data-v="Fri" onclick="remTogDay(this)">Fri</button><button class="tog-btn" data-v="Sat" onclick="remTogDay(this)">Sat</button><button class="tog-btn" data-v="Sun" onclick="remTogDay(this)">Sun</button></div></div>
         <div class="form-group"><label class="form-lbl">Priority</label><div class="tone-row" onclick="document.getElementById('rem-priOpts').classList.toggle('open')"><div class="tone-left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rem-priLbl">Normal</span></div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tone-opts" id="rem-priOpts"><div class="tone-opt sel" onclick="remSelPri('Normal',this)">Normal <svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tone-opt" onclick="remSelPri('High',this)">High</div><div class="tone-opt" onclick="remSelPri('Low',this)">Low</div></div></div>
-        <div class="form-group"><label class="form-lbl">Notification Tone</label><div class="tone-row" onclick="document.getElementById('rem-toneOpts').classList.toggle('open')"><div class="tone-left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rem-toneLbl">Chime</span></div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tone-opts" id="rem-toneOpts"><div class="tone-opt sel" onclick="remSelTone('Chime',this)">Chime <svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tone-opt" onclick="remSelTone('Bell',this)">Bell</div><div class="tone-opt" onclick="remSelTone('Alert',this)">Alert</div><div class="tone-opt" onclick="remSelTone('Soft Ping',this)">Soft Ping</div><div class="tone-opt" onclick="remSelTone('Vibrate Only',this)">Vibrate Only</div></div></div>
+        <div class="form-group"><label class="form-lbl">Notification Tone</label><div class="tone-row" onclick="document.getElementById('rem-toneOpts').classList.toggle('open')"><div class="tone-left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="rem-toneLbl">Chime</span></div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tone-opts" id="rem-toneOpts"><div class="tone-opt sel" onclick="remSelTone('Chime',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:.6"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Chime <svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tone-opt" onclick="remSelTone('Bell',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:.6"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Bell</div><div class="tone-opt" onclick="remSelTone('Alert',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:.6"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Alert</div><div class="tone-opt" onclick="remSelTone('Soft Ping',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:.6"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Soft Ping</div><div class="tone-opt" onclick="remSelTone('Vibrate Only',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:.6"><path d="M8 6.5v11M16 6.5v11M4 9v6M20 9v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Vibrate Only</div></div></div>
         <div class="form-group"><label class="form-lbl">Notes (optional)</label><textarea class="form-input" id="rem-notes" rows="2" placeholder="Any extra notes..."></textarea></div>
         <button class="btn-primary" id="rem-saveBtn" onclick="remSave()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Save Reminder</button>
         <button class="btn-ghost" onclick="remCancelEdit()" style="margin-top:6px">Cancel</button>
@@ -1201,6 +1201,97 @@ window.remSelFreq=function(v){
   /* Show days group only for Weekly */
   document.getElementById('rem-daysGrp').style.display=(v==='Weekly')?'block':'none';
 };
+/* ── Tone Preview (Web Audio API) ── */
+var _toneAC=null;
+function _getAC(){
+  if(!_toneAC){
+    try{ _toneAC=new(window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  return _toneAC;
+}
+function _playChime(){
+  var ac=_getAC(); if(!ac) return;
+  var freqs=[784,1047,1319,1568],dur=[0.18,0.18,0.18,0.45],t=ac.currentTime+0.02;
+  for(var i=0;i<freqs.length;i++){
+    (function(freq,start,length){
+      var o=ac.createOscillator(),g=ac.createGain();
+      o.type='sine'; o.frequency.value=freq;
+      g.gain.setValueAtTime(0,start);
+      g.gain.linearRampToValueAtTime(0.35,start+0.03);
+      g.gain.exponentialRampToValueAtTime(0.001,start+length);
+      o.connect(g); g.connect(ac.destination);
+      o.start(start); o.stop(start+length+0.05);
+    })(freqs[i],t,dur[i]);
+    t+=dur[i]+0.04;
+  }
+}
+function _playBell(){
+  var ac=_getAC(); if(!ac) return;
+  var t=ac.currentTime+0.02;
+  [523,659,784].forEach(function(freq,idx){
+    var start=t+idx*0.22;
+    var o=ac.createOscillator(),g=ac.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0,start);
+    g.gain.linearRampToValueAtTime(0.4,start+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,start+0.7);
+    o.connect(g); g.connect(ac.destination);
+    o.start(start); o.stop(start+0.8);
+    /* add subtle overtone for bell-like timbre */
+    var o2=ac.createOscillator(),g2=ac.createGain();
+    o2.type='sine'; o2.frequency.value=freq*2.756;
+    g2.gain.setValueAtTime(0,start);
+    g2.gain.linearRampToValueAtTime(0.12,start+0.01);
+    g2.gain.exponentialRampToValueAtTime(0.001,start+0.35);
+    o2.connect(g2); g2.connect(ac.destination);
+    o2.start(start); o2.stop(start+0.4);
+  });
+}
+function _playAlert(){
+  var ac=_getAC(); if(!ac) return;
+  var t=ac.currentTime+0.02;
+  for(var r=0;r<3;r++){
+    (function(rep){
+      var start=t+rep*0.22;
+      var o=ac.createOscillator(),g=ac.createGain();
+      o.type='square'; o.frequency.value=880;
+      g.gain.setValueAtTime(0,start);
+      g.gain.linearRampToValueAtTime(0.25,start+0.01);
+      g.gain.setValueAtTime(0.25,start+0.1);
+      g.gain.linearRampToValueAtTime(0,start+0.18);
+      o.connect(g); g.connect(ac.destination);
+      o.start(start); o.stop(start+0.2);
+    })(r);
+  }
+}
+function _playSoftPing(){
+  var ac=_getAC(); if(!ac) return;
+  var t=ac.currentTime+0.02;
+  var o=ac.createOscillator(),g=ac.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(1200,t);
+  o.frequency.exponentialRampToValueAtTime(600,t+0.4);
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(0.3,t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+  o.connect(g); g.connect(ac.destination);
+  o.start(t); o.stop(t+0.55);
+}
+function _playVibrateOnly(){
+  if(navigator.vibrate){ navigator.vibrate([200,100,200]); }
+}
+var TONE_PLAYERS={
+  'Chime':_playChime,
+  'Bell':_playBell,
+  'Alert':_playAlert,
+  'Soft Ping':_playSoftPing,
+  'Vibrate Only':_playVibrateOnly
+};
+function playTonePreview(name){
+  /* Resume AudioContext if suspended (required on mobile after user gesture) */
+  if(_toneAC && _toneAC.state==='suspended'){ _toneAC.resume(); }
+  var fn=TONE_PLAYERS[name]; if(fn) fn();
+}
+
 window.remSelTone=function(name,el){
   remTone=name; document.getElementById('rem-toneLbl').textContent=name;
   var opts=document.querySelectorAll('#rem-toneOpts .tone-opt'),i,chk;
@@ -1210,6 +1301,8 @@ window.remSelTone=function(name,el){
   }
   el.insertAdjacentHTML('beforeend','<svg class="tone-chk" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>');
   document.getElementById('rem-toneOpts').classList.remove('open');
+  /* Play preview sound for the selected tone */
+  playTonePreview(name);
 };
 window.remSelPri=function(name,el){
   remPriority=name; document.getElementById('rem-priLbl').textContent=name;
